@@ -1,0 +1,23 @@
+.profile-page {
+  width: 100%;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-info {
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.info-item strong {
+  min-width: 100px;
+}

@@ -1,0 +1,64 @@
+.parts-page {
+  width: 100%;
+  padding: 0;
+}
+
+.parts-filter {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parts-table {
+  margin-top: 16px;
+}
+
+/* Striped table rows */
+.parts-table .ant-table-tbody > tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.parts-table .ant-table-tbody > tr:nth-child(even) {
+  background-color: #fafdff;
+}
+
+/* Hover effect */
+.parts-table .ant-table-tbody > tr:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+/* Table header styling */
+.parts-table .ant-table-thead > tr > th {
+  background-color: #f0f5ff;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+/* Header icons styling */
+.header-icon {
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+/* Remove cell icon styling as we're not using it anymore */
+.cell-icon {
+  display: none;
+}
+
+/* Actions column styling */
+.action-column {
+  display: flex;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  .parts-filter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .parts-filter .ant-space {
+    margin-bottom: 16px;
+  }
+}

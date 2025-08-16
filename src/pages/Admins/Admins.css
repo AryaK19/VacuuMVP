@@ -1,0 +1,65 @@
+.admins-page {
+  padding: 0;
+}
+
+.admins-filter {
+  margin-bottom: 24px;
+}
+
+.admins-table {
+  margin-top: 16px;
+}
+
+/* Striped table rows */
+.admins-table .ant-table-tbody > tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.admins-table .ant-table-tbody > tr:nth-child(even) {
+  background-color: #fafdff;
+}
+
+/* Hover effect */
+.admins-table .ant-table-tbody > tr:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+/* Table header styling */
+.admins-table .ant-table-thead > tr > th {
+  background-color: #f0f5ff;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+/* Header icons styling */
+.header-icon {
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+/* Actions column styling */
+.action-column {
+  display: flex;
+  justify-content: center;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-active {
+  background-color: #52c41a;
+}
+
+.status-inactive {
+  background-color: #ff4d4f;
+}

@@ -13,7 +13,9 @@ import {
   BellOutlined,
   SearchOutlined,
   QuestionCircleOutlined,
-  DownOutlined
+  DownOutlined,
+  TeamOutlined,
+  ShopOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth.service';
@@ -48,6 +50,8 @@ const DashboardLayout = () => {
     if (path.includes('/parts')) return 'Parts Inventory';
     if (path.includes('/profile')) return 'User Profile';
     if (path.includes('/settings')) return 'System Settings';
+    if (path.includes('/admins')) return 'Admins Management';
+    if (path.includes('/distributors')) return 'Distributors Management';
     return 'Dashboard';
   };
 
@@ -115,50 +119,79 @@ const DashboardLayout = () => {
             />
           )}
         </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[location.pathname]}
-          items={[
-            {
-              key: '/dashboard',
-              icon: <DashboardOutlined />,
-              label: 'Dashboard',
-              onClick: () => navigate('/dashboard'),
-            },
-            {
-              key: '/pumps',
-              icon: <ToolOutlined />,
-              label: 'Pumps',
-              onClick: () => navigate('/pumps'),
-            },
-            {
-              key: '/parts',
-              icon: <AppstoreOutlined />,
-              label: 'Parts',
-              onClick: () => navigate('/parts'),
-            },
-            {
-              key: '/profile',
-              icon: <UserOutlined />,
-              label: 'Profile',
-              onClick: () => navigate('/profile'),
-            },
-            {
-              key: '/settings',
-              icon: <SettingOutlined />,
-              label: 'Settings',
-              onClick: () => navigate('/settings'),
-            },
-            {
-              key: 'logout',
-              icon: <LogoutOutlined />,
-              label: 'Logout',
-              onClick: handleLogout,
-              style: { marginTop: '30px' }
-            },
-          ]}
-        />
+        
+        <div className="menu-container">
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            className="main-menu"
+            items={[
+              {
+                key: '/dashboard',
+                icon: <DashboardOutlined />,
+                label: 'Dashboard',
+                onClick: () => navigate('/dashboard'),
+              },
+              {
+                key: '/pumps',
+                icon: <ToolOutlined />,
+                label: 'Pumps',
+                onClick: () => navigate('/pumps'),
+              },
+              {
+                key: '/parts',
+                icon: <AppstoreOutlined />,
+                label: 'Parts',
+                onClick: () => navigate('/parts'),
+              },
+              {
+                key: '/profile',
+                icon: <UserOutlined />,
+                label: 'Profile',
+                onClick: () => navigate('/profile'),
+              },
+            ]}
+          />
+          
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            className="bottom-menu"
+            items={[
+              {
+                type: 'divider',
+                style: { margin: '8px 16px', backgroundColor: 'rgba(255, 255, 255, 0.2)' }
+              },
+              {
+                key: 'configuration',
+                icon: <SettingOutlined />,
+                label: 'Configuration',
+                children: [
+                  {
+                    key: '/admins',
+                    icon: <TeamOutlined />,
+                    label: 'Admins',
+                    onClick: () => navigate('/admins'),
+                  },
+                  {
+                    key: '/distributors',
+                    icon: <ShopOutlined />,
+                    label: 'Distributors',
+                    onClick: () => navigate('/distributors'),
+                  },
+                ],
+              },
+              {
+                key: 'logout',
+                icon: <LogoutOutlined />,
+                label: 'Logout',
+                onClick: handleLogout,
+              },
+            ]}
+          />
+        </div>
       </Sider>
       <Layout className={`site-layout ${collapsed ? 'collapsed' : ''}`}>
         <Header className="site-header" style={{ background: colorBgContainer }}>

@@ -14,6 +14,8 @@ import Pumps from './pages/Pumps/Pumps';
 import Parts from './pages/Parts/Parts';
 import Profile from './pages/Profile/Profile';
 import Settings from './pages/Settings/Settings';
+import Admins from './pages/Admins/Admins';
+import Distributors from './pages/Distributors/Distributors';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
@@ -45,6 +47,8 @@ function App() {
                 <Route path="/parts" element={<Parts />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/admins" element={<Admins />} />
+                <Route path="/distributors" element={<Distributors />} />
               </Route>
             </Route>
             

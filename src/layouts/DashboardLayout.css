@@ -8,7 +8,15 @@
   height: 100vh;
   z-index: 10;
   left: 0;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .logo-container {
@@ -184,4 +192,77 @@
   font-size: 12px;
   color: rgba(0, 0, 0, 0.45);
   margin-left: 4px;
+}
+
+/* Menu divider styling */
+.sidebar .ant-menu-item-divider {
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 20px 16px;
+}
+
+/* Configuration submenu styles */
+.sidebar .ant-menu-submenu {
+  margin: 8px 0;
+}
+
+.sidebar .ant-menu-submenu > .ant-menu-submenu-title {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  border-radius: 0 24px 24px 0;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  margin: 0;
+}
+
+.sidebar .ant-menu-submenu > .ant-menu-submenu-title:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .ant-menu-submenu-open > .ant-menu-submenu-title {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .ant-menu-submenu .ant-menu-item {
+  padding-left: 40px !important;
+  margin: 4px 0;
+  height: 40px;
+}
+
+.sidebar .ant-menu-submenu-title .ant-menu-title-content,
+.sidebar .ant-menu-submenu-title .ant-menu-item-icon {
+  font-weight: 500;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.main-menu {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.bottom-menu {
+  margin-top: auto;
+  padding-bottom: 16px;
+}
+
+/* Logout menu item styling */
+.sidebar .ant-menu-item[data-menu-id*="logout"] {
+  color: #ff4d4f !important;
+}
+
+.sidebar .ant-menu-item[data-menu-id*="logout"]:hover {
+  background: rgba(255, 77, 79, 0.1) !important;
+  color: #ff4d4f !important;
+}
+
+.sidebar .ant-menu-item[data-menu-id*="logout"] .ant-menu-title-content {
+  color: #ff4d4f !important;
+}
+
+.sidebar .ant-menu-item[data-menu-id*="logout"] .ant-menu-item-icon {
+  color: #ff4d4f !important;
 }

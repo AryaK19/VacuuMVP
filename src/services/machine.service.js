@@ -118,3 +118,17 @@ export const getMachineServiceReports = async (machineId, params = {}) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+/**
+ * Delete a machine (pump or part)
+ */
+export const deleteMachine = async (machineId) => {
+  prepareRequest();
+  try {
+    const response = await axios.delete(`${API_URL}/machines/${machineId}/delete`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting machine:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

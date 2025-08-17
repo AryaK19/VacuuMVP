@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Modal, 
   Descriptions, 
   Spin, 
-  Divider, 
-  Table, 
-  Tag, 
+  Tabs, 
   Typography, 
   Image,
   Card,
   Row,
   Col,
   Empty,
-  Tabs,
   Badge,
   Space,
-  Statistic,
+  Table,
+  Tag,
   Input,
-  message
+  message,
+  Button,
+  Statistic
 } from 'antd';
 import { 
   CalendarOutlined, 
@@ -33,18 +32,33 @@ import {
   ShoppingCartOutlined,
   DashboardOutlined,
   SearchOutlined,
-  EyeOutlined
+  EyeOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { getMachineDetails, getMachineServiceReports } from '../../services/machine.service';
 import { getServiceReportDetail } from '../../services/dashboard.service';
 import ServiceReportDetailsModal from '../ServiceReportDetailsModal/ServiceReportDetailsModal';
+import ModalWrapper from '../ModalWrapper/ModalWrapper';
+import CustomerRegistrationForm from '../CustomerRegistrationForm/CustomerRegistrationForm';
 import './MachineDetailsModal.css';
 
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
 const { Search } = Input;
 
-const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
+/**
+ * Modal to display machine details
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.visible - Controls visibility of the modal
+ * @param {Function} props.onCancel - Function called when modal is cancelled
+ * @param {(string|number)} props.machineId - ID of the machine to display
+ */
+const MachineDetailsModal = ({ 
+  visible, 
+  onCancel, 
+  machineId,
+  ...restProps 
+}) => {
   const [activeTab, setActiveTab] = useState("details");
   const [loading, setLoading] = useState(true);
   const [reportsLoading, setReportsLoading] = useState(false);
@@ -61,6 +75,7 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedReportData, setSelectedReportData] = useState(null);
   const [reportDetailLoading, setReportDetailLoading] = useState(false);
+  const [showCustomerRegistration, setShowCustomerRegistration] = useState(false);
 
   useEffect(() => {
     if (visible && machineId) {
@@ -80,10 +95,12 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
       const response = await getMachineDetails(machineId);
       if (response.success) {
         setMachine(response.machine);
+        // Remove automatic modal opening
       } else {
         throw new Error("Failed to fetch machine details");
       }
     } catch (error) {
+      message.error('Failed to fetch machine details');
       console.error('Error fetching machine details:', error);
     } finally {
       setLoading(false);
@@ -112,6 +129,7 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
         total: response.total || 0
       });
     } catch (error) {
+      message.error('Failed to fetch service reports');
       console.error('Error fetching service reports:', error);
     } finally {
       setReportsLoading(false);
@@ -154,6 +172,22 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
   const handleReportModalClose = () => {
     setReportModalVisible(false);
     setSelectedReportData(null);
+  };
+
+  const handleRegisterCustomer = () => {
+    setShowCustomerRegistration(true);
+  };
+
+  const handleCustomerRegistrationCancel = () => {
+    setShowCustomerRegistration(false);
+  };
+
+  const handleCustomerRegistrationSuccess = (updatedMachine) => {
+    setMachine(updatedMachine);
+    setShowCustomerRegistration(false);
+    message.success('Customer registered successfully!');
+    // Reload machine details to get fresh data
+    fetchMachineDetails();
   };
 
   const serviceReportColumns = [
@@ -306,8 +340,8 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
         
         <Col xs={24} lg={16}>
           <div className="right-section">
-            {/* Customer Information (if sold) */}
-            {machine.is_sold && machine.sold_info && (
+            {/* Customer Information or Registration Button */}
+            {machine.is_sold && machine.sold_info ? (
               <Card 
                 title={
                   <div className="card-title">
@@ -367,6 +401,33 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
                   )}
                 </Row>
               </Card>
+            ) : (
+              <Card 
+                title={
+                  <div className="card-title">
+                    <UserOutlined className="card-title-icon" /> Customer Information
+                  </div>
+                } 
+                className="info-card customer-card" 
+                bordered={false}
+              >
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                  <UserOutlined style={{ fontSize: '48px', color: '#d9d9d9', marginBottom: '16px' }} />
+                  <div style={{ marginBottom: '16px' }}>
+                    <Text type="secondary" style={{ fontSize: '16px' }}>
+                      No customer registered for this machine
+                    </Text>
+                  </div>
+                  <Button 
+                    type="primary" 
+                    icon={<PlusOutlined />}
+                    size="large"
+                    onClick={handleRegisterCustomer}
+                  >
+                    Register Customer
+                  </Button>
+                </div>
+              </Card>
             )}
           </div>
         </Col>
@@ -422,18 +483,14 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
 
   return (
     <>
-      <Modal
-        title={
-          <div className="machine-modal-title">
-            <ToolOutlined className="modal-icon" /> Machine Details
-          </div>
-        }
-        open={visible}
+      <ModalWrapper
+        visible={visible}
         onCancel={onCancel}
+        title="Machine Details"
         footer={null}
         width={1200}
         className="machine-details-modal"
-        destroyOnClose={true}
+        {...restProps}
       >
         {loading ? (
           <div className="loading-container">
@@ -477,48 +534,56 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
               </Col>
             </Row>
 
-            {/* Tab navigation */}
-            <Tabs 
-              activeKey={activeTab}
-              onChange={handleTabChange}
-              className="machine-details-tabs"
-              items={[
-                {
-                  key: 'details',
-                  label: (
-                    <span>
-                      <ToolOutlined /> Machine Details
-                    </span>
-                  ),
-                  children: renderMachineDetails()
-                },
-                {
-                  key: 'reports',
-                  label: (
-                    <span>
-                      <HistoryOutlined /> Service Reports
-                      <Badge 
-                        count={reportsPagination.total || 0}
-                        showZero
-                        className="tab-badge"
-                        size="small"
-                      />
-                    </span>
-                  ),
-                  children: renderServiceReports()
-                }
-              ]}
-            />
-          </div>
-        ) : (
-          <div className="error-container">
-            <Empty 
-              description={<Text type="danger">Failed to load machine details.</Text>}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          </div>
-        )}
-      </Modal>
+              {/* Tab navigation */}
+              <Tabs 
+                activeKey={activeTab}
+                onChange={handleTabChange}
+                className="machine-details-tabs"
+                items={[
+                  {
+                    key: 'details',
+                    label: (
+                      <span>
+                        <ToolOutlined /> Machine Details
+                      </span>
+                    ),
+                    children: renderMachineDetails()
+                  },
+                  {
+                    key: 'reports',
+                    label: (
+                      <span>
+                        <HistoryOutlined /> Service Reports
+                        <Badge 
+                          count={reportsPagination.total || 0}
+                          showZero
+                          className="tab-badge"
+                          size="small"
+                        />
+                      </span>
+                    ),
+                    children: renderServiceReports()
+                  }
+                ]}
+              />
+            </div>
+          ) : (
+            <div className="error-container">
+              <Empty 
+                description={<Text type="danger">Failed to load machine details.</Text>}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            </div>
+          )}
+        </ModalWrapper>
+
+      <CustomerRegistrationForm
+        visible={showCustomerRegistration}
+        machine={machine}
+        onCancel={handleCustomerRegistrationCancel}
+        onSuccess={handleCustomerRegistrationSuccess}
+      />
+    </>
 
       {/* Service Report Details Modal */}
       <ServiceReportDetailsModal

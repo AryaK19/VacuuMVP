@@ -29,7 +29,7 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
     setLoading(true);
     try {
       const customerData = {
-        machine_id: machine.machine_id, // Assuming machine has an id field
+        machine_id: machine.id || machine.machine_id, // Try both possible field names
         customer_name: values.customer_name,
         customer_contact: values.customer_contact,
         customer_email: values.customer_email,
@@ -83,6 +83,8 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
       width={600}
       maskClosable={false}
       className="customer-registration-modal"
+      zIndex={1050}
+      destroyOnClose={true}
     >
       <Alert
         message="Customer Registration Required"

@@ -9,7 +9,8 @@ import {
   Spin, 
   Tooltip,
   Tag,
-  message 
+  message,
+  App
 } from 'antd';
 import { 
   SearchOutlined, 
@@ -21,15 +22,18 @@ import {
   CalendarOutlined,
   EditOutlined,
   DeleteOutlined,
-  PlusOutlined
+  PlusOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { getDistributors } from '../../services/user.service';
+import { getDistributors, deleteUser } from '../../services/user.service';
 import UserRegistrationModal from '../../components/UserRegistrationModal/UserRegistrationModal';
+import ModalWrapper from '../../components/ModalWrapper/ModalWrapper';
 import './Distributors.css';
 
 const { Title } = Typography;
 
-const Distributors = () => {
+const DistributorsContent = () => {
+  const { modal } = App.useApp();
   const [distributors, setDistributors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -128,6 +132,37 @@ const Distributors = () => {
     );
   };
 
+  const showDeleteConfirm = (distributor) => {
+    modal.confirm({
+      title: 'Are you sure you want to delete this distributor?',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>This action will permanently delete the distributor account: <strong>{distributor.name}</strong> ({distributor.email})</p>
+          <p>Their user account will be removed from authentication system.</p>
+          <p>All associated records will also be deleted.</p>
+          <p>This action cannot be undone.</p>
+        </div>
+      ),
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'No, Cancel',
+      onOk() {
+        return handleDeleteDistributor(distributor.id);
+      },
+    });
+  };
+
+  const handleDeleteDistributor = async (distributorId) => {
+    try {
+      await deleteUser(distributorId);
+      message.success('Distributor deleted successfully');
+      fetchDistributors(); // Refresh the list
+    } catch (error) {
+      message.error(error.message || 'Failed to delete distributor');
+    }
+  };
+
   const columns = [
     {
       title: () => (
@@ -204,7 +239,7 @@ const Distributors = () => {
               danger
               icon={<DeleteOutlined />} 
               size="small"
-              onClick={() => console.log('Delete distributor:', record)}
+              onClick={() => showDeleteConfirm(record)}
             />
           </Tooltip>
         </Space>
@@ -282,5 +317,12 @@ const Distributors = () => {
     </div>
   );
 };
+
+// Wrap the component with App
+const Distributors = () => (
+  <App>
+    <DistributorsContent />
+  </App>
+);
 
 export default Distributors;

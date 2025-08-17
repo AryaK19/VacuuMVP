@@ -1,3 +1,15 @@
+.customer-registration-modal {
+  z-index: 1050 !important;
+}
+
+.customer-registration-modal .ant-modal-mask {
+  z-index: 1050 !important;
+}
+
+.customer-registration-modal .ant-modal-wrap {
+  z-index: 1051 !important;
+}
+
 .customer-registration-modal .ant-modal-header {
   border-bottom: 1px solid #f0f0f0;
   padding: 16px 24px;

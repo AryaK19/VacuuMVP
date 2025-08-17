@@ -1,0 +1,38 @@
+/* Add this to your existing Dashboard.css file */
+.statistic-container {
+  text-align: center;
+  width: 100%;
+}
+
+.statistic-title {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 4px;
+}
+
+.statistic-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* Style for the Recent Activities section */
+.recent-activities-card .ant-list-item {
+  padding: 12px 0;
+  transition: background-color 0.3s;
+}
+
+.recent-activities-card .ant-list-item:hover {
+  background-color: #f5f5f5;
+}
+
+.recent-activities-card .ant-card-head-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Empty state styling */
+.recent-activities-card .ant-spin-container {
+  min-height: 200px;
+}

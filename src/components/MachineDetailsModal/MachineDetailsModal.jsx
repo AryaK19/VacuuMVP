@@ -95,7 +95,6 @@ const MachineDetailsModal = ({
       const response = await getMachineDetails(machineId);
       if (response.success) {
         setMachine(response.machine);
-        // Remove automatic modal opening
       } else {
         throw new Error("Failed to fetch machine details");
       }
@@ -186,7 +185,6 @@ const MachineDetailsModal = ({
     setMachine(updatedMachine);
     setShowCustomerRegistration(false);
     message.success('Customer registered successfully!');
-    // Reload machine details to get fresh data
     fetchMachineDetails();
   };
 
@@ -534,56 +532,56 @@ const MachineDetailsModal = ({
               </Col>
             </Row>
 
-              {/* Tab navigation */}
-              <Tabs 
-                activeKey={activeTab}
-                onChange={handleTabChange}
-                className="machine-details-tabs"
-                items={[
-                  {
-                    key: 'details',
-                    label: (
-                      <span>
-                        <ToolOutlined /> Machine Details
-                      </span>
-                    ),
-                    children: renderMachineDetails()
-                  },
-                  {
-                    key: 'reports',
-                    label: (
-                      <span>
-                        <HistoryOutlined /> Service Reports
-                        <Badge 
-                          count={reportsPagination.total || 0}
-                          showZero
-                          className="tab-badge"
-                          size="small"
-                        />
-                      </span>
-                    ),
-                    children: renderServiceReports()
-                  }
-                ]}
-              />
-            </div>
-          ) : (
-            <div className="error-container">
-              <Empty 
-                description={<Text type="danger">Failed to load machine details.</Text>}
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </div>
-          )}
-        </ModalWrapper>
+            {/* Tab navigation */}
+            <Tabs 
+              activeKey={activeTab}
+              onChange={handleTabChange}
+              className="machine-details-tabs"
+              items={[
+                {
+                  key: 'details',
+                  label: (
+                    <span>
+                      <ToolOutlined /> Machine Details
+                    </span>
+                  ),
+                  children: renderMachineDetails()
+                },
+                {
+                  key: 'reports',
+                  label: (
+                    <span>
+                      <HistoryOutlined /> Service Reports
+                      <Badge 
+                        count={reportsPagination.total || 0}
+                        showZero
+                        className="tab-badge"
+                        size="small"
+                      />
+                    </span>
+                  ),
+                  children: renderServiceReports()
+                }
+              ]}
+            />
+          </div>
+        ) : (
+          <div className="error-container">
+            <Empty 
+              description={<Text type="danger">Failed to load machine details.</Text>}
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          </div>
+        )}
+      </ModalWrapper>
 
+      {/* Customer Registration Form */}
       <CustomerRegistrationForm
         visible={showCustomerRegistration}
         machine={machine}
         onCancel={handleCustomerRegistrationCancel}
         onSuccess={handleCustomerRegistrationSuccess}
       />
-    </>
 
       {/* Service Report Details Modal */}
       <ServiceReportDetailsModal

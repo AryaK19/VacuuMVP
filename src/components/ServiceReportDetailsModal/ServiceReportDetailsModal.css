@@ -1,0 +1,141 @@
+.service-report-details-modal .ant-modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.service-report-details-modal .ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Files Section Styles */
+.service-report-details-modal .files-section {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.service-report-details-modal .image-item {
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.service-report-details-modal .image-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.service-report-details-modal .image-actions {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.service-report-details-modal .file-name {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.service-report-details-modal .file-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.service-report-details-modal .file-item:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+}
+
+.service-report-details-modal .file-icon {
+  font-size: 16px;
+  color: #1890ff;
+  margin-right: 8px;
+}
+
+.service-report-details-modal .file-item .file-name {
+  flex: 1;
+  margin: 0 8px;
+  text-align: left;
+}
+
+/* Parts table styling */
+.service-report-details-modal .ant-table-small .ant-table-thead > tr > th {
+  background-color: #f0f2f5;
+  font-weight: 600;
+}
+
+.service-report-details-modal .ant-table-bordered .ant-table-thead > tr > th,
+.service-report-details-modal .ant-table-bordered .ant-table-tbody > tr > td {
+  border-right: 1px solid #f0f0f0;
+}
+
+/* Section titles */
+.service-report-details-modal .ant-typography h5 {
+  color: #262626;
+  margin-bottom: 16px !important;
+}
+
+.service-report-details-modal .ant-typography h5 .anticon {
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+/* Image Preview Enhancements */
+.service-report-details-modal .ant-image-preview-operations {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.service-report-details-modal .ant-image-preview-operations .ant-image-preview-operations-operation {
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .service-report-details-modal {
+    width: 95% !important;
+    margin: 10px;
+  }
+  
+  .service-report-details-modal .ant-descriptions-bordered {
+    font-size: 12px;
+  }
+
+  .service-report-details-modal .files-section {
+    padding: 12px;
+  }
+
+  .service-report-details-modal .image-item {
+    padding: 6px;
+  }
+
+  .service-report-details-modal .ant-table-small {
+    font-size: 12px;
+  }
+}
+
+/* Loading state for images */
+.service-report-details-modal .ant-image img {
+  transition: opacity 0.3s ease;
+}
+
+.service-report-details-modal .ant-image .ant-image-placeholder {
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bfbfbf;
+}

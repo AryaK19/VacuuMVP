@@ -353,6 +353,15 @@
   font-weight: 500;
 }
 
+.view-report-icon {
+  transition: all 0.3s ease;
+}
+
+.view-report-icon:hover {
+  color: #40a9ff !important;
+  transform: scale(1.1);
+}
+
 .empty-reports {
   margin: 20px 0;
   padding: 20px;

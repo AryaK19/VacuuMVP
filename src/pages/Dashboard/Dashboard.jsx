@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Typography, List, Avatar, Spin, message, Modal, Descriptions, Tag } from 'antd';
+import { Row, Col, Card, Statistic, Typography, List, Avatar, Spin, message } from 'antd';
 import {
   UserOutlined,
   ShoppingCartOutlined,
@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 import { getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
+import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 import './Dashboard.css';
 
 const { Title } = Typography;
@@ -50,24 +51,6 @@ const Dashboard = () => {
     }
   };
 
-  // Function to get service type color for tags
-  const getServiceTypeColor = (serviceType) => {
-    switch (serviceType.toLowerCase()) {
-      case 'warranty':
-        return 'green';
-      case 'paid':
-        return 'blue';
-      case 'maintenance':
-        return 'orange';
-      case 'repair':
-        return 'red';
-      case 'installation':
-        return 'purple';
-      default:
-        return 'default';
-    }
-  };
-
   // Function to format relative time
   const getRelativeTime = (dateString) => {
     const now = new Date();
@@ -88,12 +71,6 @@ const Dashboard = () => {
     } else {
       return activityDate.toLocaleDateString();
     }
-  };
-
-  // Function to format date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
   };
 
   // Handle clicking on an activity
@@ -261,60 +238,13 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      {/* Service Report Detail Modal */}
-      <Modal
-        title="Service Report Details"
-        open={modalVisible}
-        onCancel={handleModalClose}
-        footer={null}
-        width={800}
-      >
-        <Spin spinning={modalLoading}>
-          {selectedReport && (
-            <Descriptions bordered column={2} size="small">
-              <Descriptions.Item label="Report ID" span={2}>
-                {selectedReport.id}
-              </Descriptions.Item>
-              <Descriptions.Item label="Service Type">
-                <Tag color={getServiceTypeColor(selectedReport.service_type_name)}>
-                  {selectedReport.service_type_name}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Service Person">
-                {selectedReport.service_person_name || 'Not specified'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Created By">
-                {selectedReport.user_name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Email">
-                {selectedReport.user_email}
-              </Descriptions.Item>
-              <Descriptions.Item label="Machine Serial No">
-                {selectedReport.machine_serial_no || 'Not specified'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Machine Model">
-                {selectedReport.machine_model_no || 'Not specified'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Created At">
-                {formatDate(selectedReport.created_at)}
-              </Descriptions.Item>
-              <Descriptions.Item label="Updated At">
-                {formatDate(selectedReport.updated_at)}
-              </Descriptions.Item>
-              <Descriptions.Item label="Problem" span={2}>
-                <div style={{ whiteSpace: 'pre-wrap' }}>
-                  {selectedReport.problem || 'No problem description provided'}
-                </div>
-              </Descriptions.Item>
-              <Descriptions.Item label="Solution" span={2}>
-                <div style={{ whiteSpace: 'pre-wrap' }}>
-                  {selectedReport.solution || 'No solution provided'}
-                </div>
-              </Descriptions.Item>
-            </Descriptions>
-          )}
-        </Spin>
-      </Modal>
+      {/* Service Report Details Modal */}
+      <ServiceReportDetailsModal
+        visible={modalVisible}
+        onClose={handleModalClose}
+        reportData={selectedReport}
+        loading={modalLoading}
+      />
     </div>
   );
 };

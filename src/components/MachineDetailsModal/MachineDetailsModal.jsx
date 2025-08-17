@@ -16,7 +16,8 @@ import {
   Badge,
   Space,
   Statistic,
-  Input
+  Input,
+  message
 } from 'antd';
 import { 
   CalendarOutlined, 
@@ -31,9 +32,12 @@ import {
   IdcardOutlined,
   ShoppingCartOutlined,
   DashboardOutlined,
-  SearchOutlined
+  SearchOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
 import { getMachineDetails, getMachineServiceReports } from '../../services/machine.service';
+import { getServiceReportDetail } from '../../services/dashboard.service';
+import ServiceReportDetailsModal from '../ServiceReportDetailsModal/ServiceReportDetailsModal';
 import './MachineDetailsModal.css';
 
 const { Title, Text } = Typography;
@@ -52,6 +56,11 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
     total: 0
   });
   const [searchText, setSearchText] = useState('');
+  
+  // Service Report Details Modal state
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [selectedReportData, setSelectedReportData] = useState(null);
+  const [reportDetailLoading, setReportDetailLoading] = useState(false);
 
   useEffect(() => {
     if (visible && machineId) {
@@ -126,6 +135,27 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
     fetchServiceReports(searchText);
   };
 
+  // Handle service report row click
+  const handleServiceReportClick = async (reportId) => {
+    try {
+      setReportDetailLoading(true);
+      setReportModalVisible(true);
+      const reportDetail = await getServiceReportDetail(reportId);
+      setSelectedReportData(reportDetail);
+    } catch (error) {
+      message.error('Failed to load service report details');
+      setReportModalVisible(false);
+    } finally {
+      setReportDetailLoading(false);
+    }
+  };
+
+  // Close service report details modal
+  const handleReportModalClose = () => {
+    setReportModalVisible(false);
+    setSelectedReportData(null);
+  };
+
   const serviceReportColumns = [
     {
       title: 'Service Type',
@@ -185,6 +215,20 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
         </div>
       ),
     },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 80,
+      align: 'center',
+      render: (_, record) => (
+        <EyeOutlined 
+          className="view-report-icon"
+          onClick={() => handleServiceReportClick(record.id)}
+          style={{ cursor: 'pointer', color: '#1890ff', fontSize: '16px' }}
+          title="View Details"
+        />
+      ),
+    }
   ];
 
   const StatCard = ({ icon, title, value, color }) => (
@@ -377,103 +421,113 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
   );
 
   return (
-    <Modal
-      title={
-        <div className="machine-modal-title">
-          <ToolOutlined className="modal-icon" /> Machine Details
-        </div>
-      }
-      open={visible}
-      onCancel={onCancel}
-      footer={null}
-      width={1200}
-      className="machine-details-modal"
-      destroyOnClose={true}
-    >
-      {loading ? (
-        <div className="loading-container">
-          <Spin size="large" />
-        </div>
-      ) : machine ? (
-        <div className="machine-details-content">
-          {/* Top Stats Row */}
-          <Row gutter={[12, 12]} className="stats-row">
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<ToolOutlined />}
-                title="Status"
-                value={machine.is_sold ? "Sold" : "Available"}
-                color={machine.is_sold ? "#52c41a" : "#1890ff"}
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<IdcardOutlined />}
-                title="Model"
-                value={machine.model_no}
-                color="#722ed1"
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<DashboardOutlined />}
-                title="Type"
-                value={machine.machine_type?.type || 'N/A'}
-                color="#fa8c16"
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<HistoryOutlined />}
-                title="Service Reports"
-                value={reportsPagination.total || 0}
-                color="#eb2f96"
-              />
-            </Col>
-          </Row>
+    <>
+      <Modal
+        title={
+          <div className="machine-modal-title">
+            <ToolOutlined className="modal-icon" /> Machine Details
+          </div>
+        }
+        open={visible}
+        onCancel={onCancel}
+        footer={null}
+        width={1200}
+        className="machine-details-modal"
+        destroyOnClose={true}
+      >
+        {loading ? (
+          <div className="loading-container">
+            <Spin size="large" />
+          </div>
+        ) : machine ? (
+          <div className="machine-details-content">
+            {/* Top Stats Row */}
+            <Row gutter={[12, 12]} className="stats-row">
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<ToolOutlined />}
+                  title="Status"
+                  value={machine.is_sold ? "Sold" : "Available"}
+                  color={machine.is_sold ? "#52c41a" : "#1890ff"}
+                />
+              </Col>
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<IdcardOutlined />}
+                  title="Model"
+                  value={machine.model_no}
+                  color="#722ed1"
+                />
+              </Col>
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<DashboardOutlined />}
+                  title="Type"
+                  value={machine.machine_type?.type || 'N/A'}
+                  color="#fa8c16"
+                />
+              </Col>
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<HistoryOutlined />}
+                  title="Service Reports"
+                  value={reportsPagination.total || 0}
+                  color="#eb2f96"
+                />
+              </Col>
+            </Row>
 
-          {/* Tab navigation */}
-          <Tabs 
-            activeKey={activeTab}
-            onChange={handleTabChange}
-            className="machine-details-tabs"
-            items={[
-              {
-                key: 'details',
-                label: (
-                  <span>
-                    <ToolOutlined /> Machine Details
-                  </span>
-                ),
-                children: renderMachineDetails()
-              },
-              {
-                key: 'reports',
-                label: (
-                  <span>
-                    <HistoryOutlined /> Service Reports
-                    <Badge 
-                      count={reportsPagination.total || 0}
-                      showZero
-                      className="tab-badge"
-                      size="small"
-                    />
-                  </span>
-                ),
-                children: renderServiceReports()
-              }
-            ]}
-          />
-        </div>
-      ) : (
-        <div className="error-container">
-          <Empty 
-            description={<Text type="danger">Failed to load machine details.</Text>}
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
-        </div>
-      )}
-    </Modal>
+            {/* Tab navigation */}
+            <Tabs 
+              activeKey={activeTab}
+              onChange={handleTabChange}
+              className="machine-details-tabs"
+              items={[
+                {
+                  key: 'details',
+                  label: (
+                    <span>
+                      <ToolOutlined /> Machine Details
+                    </span>
+                  ),
+                  children: renderMachineDetails()
+                },
+                {
+                  key: 'reports',
+                  label: (
+                    <span>
+                      <HistoryOutlined /> Service Reports
+                      <Badge 
+                        count={reportsPagination.total || 0}
+                        showZero
+                        className="tab-badge"
+                        size="small"
+                      />
+                    </span>
+                  ),
+                  children: renderServiceReports()
+                }
+              ]}
+            />
+          </div>
+        ) : (
+          <div className="error-container">
+            <Empty 
+              description={<Text type="danger">Failed to load machine details.</Text>}
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          </div>
+        )}
+      </Modal>
+
+      {/* Service Report Details Modal */}
+      <ServiceReportDetailsModal
+        visible={reportModalVisible}
+        onClose={handleReportModalClose}
+        reportData={selectedReportData}
+        loading={reportDetailLoading}
+      />
+    </>
   );
 };
 

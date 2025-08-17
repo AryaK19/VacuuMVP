@@ -20,9 +20,9 @@ import {
   ToolFilled
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
-import { getDashboardStatistics, getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
 import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 import './Dashboard.css';
+import { getDistributorStatistics, getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
 
 const { Title } = Typography;
 
@@ -101,6 +101,32 @@ const Dashboard = () => {
     setModalVisible(false);
     setSelectedReport(null);
   };
+const [distributorStats, setDistributorStats] = useState({
+  machines_sold: 0,
+  active_amc_contracts: 0,
+  service_reports: 0
+});
+const [statsLoading, setStatsLoading] = useState(true);
+
+// Add this function to fetch distributor stats
+const fetchDistributorStats = async () => {
+  try {
+    setStatsLoading(true);
+    const stats = await getDistributorStatistics();
+    setDistributorStats(stats);
+  } catch (error) {
+    console.error('Error fetching distributor statistics:', error);
+    message.error('Failed to load distributor statistics');
+  } finally {
+    setStatsLoading(false);
+  }
+};
+
+// Update the useEffect to fetch both stats and activities
+useEffect(() => {
+  fetchDistributorStats();
+  fetchRecentActivities();
+}, []);
 
   // Fetch recent activities
   const fetchRecentActivities = async () => {
@@ -147,74 +173,80 @@ const Dashboard = () => {
         <p>Here's what's happening today</p>
       </div>
 
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={8} lg={6}>
-          <Card 
-            size="small" 
-            style={{ overflow: 'hidden' }}
-            bodyStyle={{ 
-              height: '70px', 
-              padding: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              overflow: 'hidden'
-            }}
-          >
-            <div className="statistic-container">
-              <div className="statistic-title">Machines Sold</div>
-              <div className="statistic-content">
-                <ShoppingCartOutlined style={{ color: '#1890ff', marginRight: '8px' }} />
-                <span style={{ color: '#1890ff', fontSize: '18px' }}>12</span>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} lg={6}>
-          <Card 
-            size="small" 
-            style={{ overflow: 'hidden' }}
-            bodyStyle={{ 
-              height: '70px', 
-              padding: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              overflow: 'hidden'
-            }}
-          >
-            <div className="statistic-container">
-              <div className="statistic-title">Active AMC Contracts</div>
-              <div className="statistic-content">
-                <AuditOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
-                <span style={{ color: '#52c41a', fontSize: '18px' }}>5</span>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} lg={6}>
-          <Card 
-            size="small" 
-            style={{ overflow: 'hidden' }}
-            bodyStyle={{ 
-              height: '70px', 
-              padding: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              overflow: 'hidden'
-            }}
-          >
-            <div className="statistic-container">
-              <div className="statistic-title">Service Reports</div>
-              <div className="statistic-content">
-                <ToolFilled style={{ color: '#722ed1', marginRight: '8px' }} />
-                <span style={{ color: '#722ed1', fontSize: '18px' }}>8</span>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+<Row gutter={[12, 12]}>
+  <Col xs={24} sm={8} lg={6}>
+    <Card 
+      size="small" 
+      style={{ overflow: 'hidden' }}
+      bodyStyle={{ 
+        height: '70px', 
+        padding: '8px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}
+    >
+      <Spin spinning={statsLoading}>
+        <div className="statistic-container">
+          <div className="statistic-title">Machines Sold</div>
+          <div className="statistic-content">
+            <ShoppingCartOutlined style={{ color: '#1890ff', marginRight: '8px' }} />
+            <span style={{ color: '#1890ff', fontSize: '18px' }}>{distributorStats.machines_sold}</span>
+          </div>
+        </div>
+      </Spin>
+    </Card>
+  </Col>
+  <Col xs={24} sm={8} lg={6}>
+    <Card 
+      size="small" 
+      style={{ overflow: 'hidden' }}
+      bodyStyle={{ 
+        height: '70px', 
+        padding: '8px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}
+    >
+      <Spin spinning={statsLoading}>
+        <div className="statistic-container">
+          <div className="statistic-title">Active AMC Contracts</div>
+          <div className="statistic-content">
+            <AuditOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
+            <span style={{ color: '#52c41a', fontSize: '18px' }}>{distributorStats.active_amc_contracts}</span>
+          </div>
+        </div>
+      </Spin>
+    </Card>
+  </Col>
+  <Col xs={24} sm={8} lg={6}>
+    <Card 
+      size="small" 
+      style={{ overflow: 'hidden' }}
+      bodyStyle={{ 
+        height: '70px', 
+        padding: '8px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}
+    >
+      <Spin spinning={statsLoading}>
+        <div className="statistic-container">
+          <div className="statistic-title">Service Reports</div>
+          <div className="statistic-content">
+            <ToolFilled style={{ color: '#722ed1', marginRight: '8px' }} />
+            <span style={{ color: '#722ed1', fontSize: '18px' }}>{distributorStats.service_reports}</span>
+          </div>
+        </div>
+      </Spin>
+    </Card>
+  </Col>
+</Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         <Col xs={24} lg={16}>

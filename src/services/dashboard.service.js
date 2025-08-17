@@ -89,3 +89,14 @@ export const downloadServiceReportPDF = async (reportId) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+export const getDistributorStatistics = async () => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/dashboard/distributor-statistics`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching distributor statistics:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Modal, 
   Descriptions, 
   Spin, 
-  Divider, 
-  Table, 
-  Tag, 
+  Tabs, 
   Typography, 
   Image,
   Card,
   Row,
   Col,
   Empty,
-  Tabs,
   Badge,
   Space,
-  Statistic,
-  Input
+  Table,
+  Tag,
+  Input,
+  message
 } from 'antd';
 import { 
   CalendarOutlined, 
@@ -34,13 +32,26 @@ import {
   SearchOutlined
 } from '@ant-design/icons';
 import { getMachineDetails, getMachineServiceReports } from '../../services/machine.service';
+import ModalWrapper from '../ModalWrapper/ModalWrapper';
 import './MachineDetailsModal.css';
 
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
 const { Search } = Input;
 
-const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
+/**
+ * Modal to display machine details
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.visible - Controls visibility of the modal
+ * @param {Function} props.onCancel - Function called when modal is cancelled
+ * @param {(string|number)} props.machineId - ID of the machine to display
+ */
+const MachineDetailsModal = ({ 
+  visible, 
+  onCancel, 
+  machineId,
+  ...restProps 
+}) => {
   const [activeTab, setActiveTab] = useState("details");
   const [loading, setLoading] = useState(true);
   const [reportsLoading, setReportsLoading] = useState(false);
@@ -75,6 +86,7 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
         throw new Error("Failed to fetch machine details");
       }
     } catch (error) {
+      message.error('Failed to fetch machine details');
       console.error('Error fetching machine details:', error);
     } finally {
       setLoading(false);
@@ -103,6 +115,7 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
         total: response.total || 0
       });
     } catch (error) {
+      message.error('Failed to fetch service reports');
       console.error('Error fetching service reports:', error);
     } finally {
       setReportsLoading(false);
@@ -377,18 +390,14 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
   );
 
   return (
-    <Modal
-      title={
-        <div className="machine-modal-title">
-          <ToolOutlined className="modal-icon" /> Machine Details
-        </div>
-      }
-      open={visible}
+    <ModalWrapper
+      visible={visible}
       onCancel={onCancel}
+      title="Machine Details"
       footer={null}
       width={1200}
       className="machine-details-modal"
-      destroyOnClose={true}
+      {...restProps}
     >
       {loading ? (
         <div className="loading-container">
@@ -473,7 +482,7 @@ const MachineDetailsModal = ({ visible, machineId, onCancel }) => {
           />
         </div>
       )}
-    </Modal>
+    </ModalWrapper>
   );
 };
 

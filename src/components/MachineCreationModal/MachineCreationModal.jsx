@@ -1,201 +1,158 @@
 import React, { useState } from 'react';
-import { Modal, Form, Input, Button, Upload, Alert, message } from 'antd';
-import { BarcodeOutlined, TagOutlined, NumberOutlined, UploadOutlined } from '@ant-design/icons';
+import { Form, Input, Upload, Button, Row, Col, Alert, message } from 'antd';
+import { UploadOutlined, NumberOutlined, TagOutlined } from '@ant-design/icons';
+import ModalWrapper from '../ModalWrapper/ModalWrapper';
 import { createPump, createPart } from '../../services/machine.service';
-import './MachineCreationModal.css';
 
+/**
+ * A modal for creating new machines (pumps or parts)
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.visible - Controls visibility of the modal
+ * @param {Function} props.onCancel - Function called when modal is cancelled
+ * @param {Function} props.onSuccess - Function called when creation is successful
+ * @param {string} props.type - Type of machine to create ('pump' or 'part')
+ * @param {string} [props.title] - Modal title
+ */
 const MachineCreationModal = ({ 
   visible, 
   onCancel, 
   onSuccess, 
-  type, // 'pump' or 'part'
-  title 
+  type, 
+  title,
+  ...restProps 
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [fileList, setFileList] = useState([]);
+  const [error, setError] = useState('');
+  
+  // Reset form and errors when modal opens/closes
+  React.useEffect(() => {
+    if (visible) {
+      form.resetFields();
+      setError('');
+    }
+  }, [visible, form]);
 
   const handleSubmit = async (values) => {
     setLoading(true);
-    setError(null);
+    setError('');
     
     try {
       const formData = new FormData();
-      formData.append('serial_no', values.serial_no);
-      formData.append('model_no', values.model_no);
       
-      if (values.part_no) {
-        formData.append('part_no', values.part_no);
-      }
+      // Add form fields to FormData
+      Object.keys(values).forEach(key => {
+        if (key === 'files' && values[key]) {
+          values[key].forEach(file => {
+            if (file.originFileObj) {
+              formData.append('files', file.originFileObj);
+            }
+          });
+        } else if (values[key] !== undefined) {
+          formData.append(key, values[key]);
+        }
+      });
       
-      if (fileList.length > 0) {
-        formData.append('file', fileList[0].originFileObj);
-      }
-      
-      let response;
+      // Call appropriate API based on type
       if (type === 'pump') {
-        response = await createPump(formData);
-      } else {
-        response = await createPart(formData);
+        await createPump(formData);
+      } else if (type === 'part') {
+        await createPart(formData);
       }
       
-      if (response.success) {
-        message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
-        form.resetFields();
-        setFileList([]);
-        onSuccess();
-      } else {
-        setError(response.message || 'Creation failed. Please try again.');
-      }
-    } catch (error) {
-      console.error("Creation error:", error);
-      let errorMessage = 'Failed to create. Please try again.';
-      
-      if (error.detail) {
-        errorMessage = Array.isArray(error.detail) 
-          ? error.detail.map(err => err.msg).join(', ')
-          : error.detail;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      setError(errorMessage);
+      message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
+      onSuccess();
+    } catch (err) {
+      setError(err.message || `Failed to create ${type}. Please try again.`);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCancel = () => {
-    form.resetFields();
-    setFileList([]);
-    setError(null);
-    onCancel();
-  };
-
-  const beforeUpload = (file) => {
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-      message.error('You can only upload image files!');
-      return false;
-    }
-    
-    const isLt5M = file.size / 1024 / 1024 < 5;
-    if (!isLt5M) {
-      message.error('Image must be smaller than 5MB!');
-      return false;
-    }
-    
-    return false; // Prevent automatic upload
-  };
-
-  const handleFileChange = ({ fileList }) => {
-    setFileList(fileList.slice(-1)); // Keep only the last file
-  };
-
   return (
-    <Modal
-      title={title}
-      open={visible}
-      onCancel={handleCancel}
+    <ModalWrapper
+      visible={visible}
+      onCancel={onCancel}
+      title={title || `Create New ${type.charAt(0).toUpperCase() + type.slice(1)}`}
       footer={null}
-      width={600}
-      className="machine-creation-modal"
+      width={800}
+      {...restProps}
     >
       {error && (
         <Alert
-          message="Creation Error"
+          message="Error"
           description={error}
           type="error"
           showIcon
-          closable
-          className="creation-error-alert"
-          onClose={() => setError(null)}
           style={{ marginBottom: 16 }}
         />
       )}
       
       <Form
         form={form}
-        name="machine-creation-form"
-        onFinish={handleSubmit}
         layout="vertical"
-        size="large"
-        className="machine-creation-form"
+        onFinish={handleSubmit}
       >
+        <Row gutter={16}>
+          {type === 'pump' && (
+            <Col span={12}>
+              <Form.Item
+                name="serial_no"
+                label="Serial Number"
+                rules={[{ required: true, message: 'Please enter serial number' }]}
+              >
+                <Input prefix={<NumberOutlined />} placeholder="Serial Number" />
+              </Form.Item>
+            </Col>
+          )}
+          
+          <Col span={12}>
+            <Form.Item
+              name="part_no"
+              label="Part Number"
+              rules={[{ required: true, message: 'Please enter part number' }]}
+            >
+              <Input prefix={<NumberOutlined />} placeholder="Part Number" />
+            </Form.Item>
+          </Col>
+          
+          <Col span={type === 'pump' ? 12 : 24}>
+            <Form.Item
+              name="model_no"
+              label="Model Number"
+              rules={[{ required: true, message: 'Please enter model number' }]}
+            >
+              <Input prefix={<TagOutlined />} placeholder="Model Number" />
+            </Form.Item>
+          </Col>
+        </Row>
+        
         <Form.Item
-          name="serial_no"
-          rules={[{ required: true, message: 'Please input the serial number!' }]}
-          label="Serial Number"
-        >
-          <Input 
-            prefix={<BarcodeOutlined />} 
-            placeholder="Serial Number" 
-            disabled={loading}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="model_no"
-          rules={[{ required: true, message: 'Please input the model number!' }]}
-          label="Model Number"
-        >
-          <Input 
-            prefix={<TagOutlined />} 
-            placeholder="Model Number" 
-            disabled={loading}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="part_no"
-          label="Part Number (Optional)"
-        >
-          <Input 
-            prefix={<NumberOutlined />} 
-            placeholder="Part Number" 
-            disabled={loading}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="image"
-          label="Product Image (Optional)"
+          name="files"
+          label="Upload Files (Optional)"
         >
           <Upload
-            beforeUpload={beforeUpload}
-            onChange={handleFileChange}
-            fileList={fileList}
-            maxCount={1}
-            accept="image/*"
-            disabled={loading}
+            multiple
+            beforeUpload={() => false} // Prevent auto upload
+            listType="text"
           >
-            <Button icon={<UploadOutlined />} disabled={loading}>
-              Upload Image
-            </Button>
+            <Button icon={<UploadOutlined />}>Click to Upload</Button>
           </Upload>
-          <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-            Supported formats: JPG, PNG, GIF (Max: 5MB)
-          </div>
         </Form.Item>
-
-        <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button onClick={handleCancel} disabled={loading}>
-              Cancel
-            </Button>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading}
-            >
-              Create {type.charAt(0).toUpperCase() + type.slice(1)}
-            </Button>
-          </div>
-        </Form.Item>
+        
+        <div style={{ textAlign: 'right', marginTop: 24 }}>
+          <Button onClick={onCancel} style={{ marginRight: 8 }}>
+            Cancel
+          </Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Create
+          </Button>
+        </div>
       </Form>
-    </Modal>
+    </ModalWrapper>
   );
 };
 
 export default MachineCreationModal;
+        

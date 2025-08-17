@@ -9,7 +9,8 @@ import {
   Spin, 
   Tooltip,
   Tag,
-  message 
+  message,
+  App
 } from 'antd';
 import { 
   SearchOutlined, 
@@ -21,15 +22,18 @@ import {
   CalendarOutlined,
   EditOutlined,
   DeleteOutlined,
-  PlusOutlined
+  PlusOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { getAdmins } from '../../services/user.service';
+import { getAdmins, deleteUser } from '../../services/user.service';
 import UserRegistrationModal from '../../components/UserRegistrationModal/UserRegistrationModal';
+import ModalWrapper from '../../components/ModalWrapper/ModalWrapper';
 import './Admins.css';
 
 const { Title } = Typography;
 
-const Admins = () => {
+const AdminsContent = () => {
+  const { modal } = App.useApp();
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -128,6 +132,37 @@ const Admins = () => {
     );
   };
 
+  const showDeleteConfirm = (admin) => {
+    modal.confirm({
+      title: 'Are you sure you want to delete this admin?',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>This action will permanently delete the admin account: <strong>{admin.name}</strong> ({admin.email})</p>
+          <p>Their user account will be removed from authentication system.</p>
+          <p>All associated records will also be deleted.</p>
+          <p>This action cannot be undone.</p>
+        </div>
+      ),
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'No, Cancel',
+      onOk() {
+        return handleDeleteAdmin(admin.id);
+      },
+    });
+  };
+
+  const handleDeleteAdmin = async (adminId) => {
+    try {
+      await deleteUser(adminId);
+      message.success('Admin deleted successfully');
+      fetchAdmins(); // Refresh the list
+    } catch (error) {
+      message.error(error.message || 'Failed to delete admin');
+    }
+  };
+
   const columns = [
     {
       title: () => (
@@ -204,7 +239,7 @@ const Admins = () => {
               danger
               icon={<DeleteOutlined />} 
               size="small"
-              onClick={() => console.log('Delete admin:', record)}
+              onClick={() => showDeleteConfirm(record)}
             />
           </Tooltip>
         </Space>
@@ -282,5 +317,12 @@ const Admins = () => {
     </div>
   );
 };
+
+// Wrap the component with App
+const Admins = () => (
+  <App>
+    <AdminsContent />
+  </App>
+);
 
 export default Admins;

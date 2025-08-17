@@ -51,3 +51,17 @@ export const getDistributors = async (params = {}) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+/**
+ * Delete a user (admin or distributor)
+ */
+export const deleteUser = async (userId) => {
+  prepareRequest();
+  try {
+    const response = await axios.delete(`${API_URL}/users/${userId}/delete`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

@@ -8,7 +8,8 @@ import {
   Typography, 
   Spin, 
   Tooltip,
-  message 
+  message,
+  App
 } from 'antd';
 import { 
   SearchOutlined, 
@@ -20,15 +21,18 @@ import {
   CalendarOutlined,
   EditOutlined,
   DeleteOutlined,
-  PlusOutlined
+  PlusOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { getParts } from '../../services/machine.service';
+import { getParts, deleteMachine } from '../../services/machine.service';
 import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
+import ModalWrapper from '../../components/ModalWrapper/ModalWrapper';
 import './Parts.css';
 
 const { Title } = Typography;
 
-const Parts = () => {
+const PartsContent = () => {
+  const { modal } = App.useApp();
   const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -116,6 +120,36 @@ const Parts = () => {
     fetchParts(); // Refresh the list
   };
 
+  const showDeleteConfirm = (part) => {
+    modal.confirm({
+      title: 'Are you sure you want to delete this part?',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>This action will permanently delete the part with part number: <strong>{part.part_no}</strong></p>
+          <p>All associated files will also be deleted.</p>
+          <p>This action cannot be undone.</p>
+        </div>
+      ),
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'No, Cancel',
+      onOk() {
+        return handleDeletePart(part.id);
+      },
+    });
+  };
+
+  const handleDeletePart = async (partId) => {
+    try {
+      await deleteMachine(partId);
+      message.success('Part deleted successfully');
+      fetchParts(); // Refresh the list
+    } catch (error) {
+      message.error(error.message || 'Failed to delete part');
+    }
+  };
+
   const columns = [
     {
       title: () => (
@@ -177,7 +211,7 @@ const Parts = () => {
               danger
               icon={<DeleteOutlined />} 
               size="small"
-              onClick={() => console.log('Delete part:', record)}
+              onClick={() => showDeleteConfirm(record)}
             />
           </Tooltip>
         </Space>
@@ -254,5 +288,12 @@ const Parts = () => {
     </div>
   );
 };
+
+// Wrap the component with App
+const Parts = () => (
+  <App>
+    <PartsContent />
+  </App>
+);
 
 export default Parts;

@@ -9,7 +9,8 @@ import {
   Spin, 
   Tooltip,
   Tag,
-  message 
+  message,
+  App
 } from 'antd';
 import { 
   SearchOutlined, 
@@ -21,16 +22,19 @@ import {
   UserOutlined,
   EditOutlined,
   DeleteOutlined,
-  PlusOutlined
+  PlusOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { getPumps } from '../../services/machine.service';
+import { getPumps, deleteMachine } from '../../services/machine.service';
 import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
 import MachineDetailsModal from '../../components/MachineDetailsModal/MachineDetailsModal';
+import ModalWrapper from '../../components/ModalWrapper/ModalWrapper';
 import './Pumps.css';
 
 const { Title } = Typography;
 
-const Pumps = () => {
+const PumpsContent = () => {
+  const { modal } = App.useApp();
   const [pumps, setPumps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -125,6 +129,36 @@ const Pumps = () => {
     setDetailsModalVisible(true);
   };
 
+  const showDeleteConfirm = (pump) => {
+    modal.confirm({
+      title: 'Are you sure you want to delete this pump?',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>This action will permanently delete the pump with serial number: <strong>{pump.serial_no}</strong></p>
+          <p>All associated service reports, parts, and files will also be deleted.</p>
+          <p>This action cannot be undone.</p>
+        </div>
+      ),
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'No, Cancel',
+      onOk() {
+        return handleDeletePump(pump.id);
+      },
+    });
+  };
+
+  const handleDeletePump = async (pumpId) => {
+    try {
+      await deleteMachine(pumpId);
+      message.success('Pump deleted successfully');
+      fetchPumps(); // Refresh the list
+    } catch (error) {
+      message.error(error.message || 'Failed to delete pump');
+    }
+  };
+
   const columns = [
     {
       title: () => (
@@ -195,7 +229,7 @@ const Pumps = () => {
               danger
               icon={<DeleteOutlined />} 
               size="small"
-              onClick={() => console.log('Delete pump:', record)}
+              onClick={() => showDeleteConfirm(record)}
             />
           </Tooltip>
         </Space>
@@ -278,6 +312,13 @@ const Pumps = () => {
     </div>
   );
 };
+
+// Wrap the component with App
+const Pumps = () => (
+  <App>
+    <PumpsContent />
+  </App>
+);
 
 export default Pumps;
 

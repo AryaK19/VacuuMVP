@@ -32,9 +32,9 @@ const ServiceReportDetailsModal = ({
         return 'green';
       case 'paid':
         return 'blue';
-      case 'maintenance':
+      case 'amc':
         return 'orange';
-      case 'repair':
+      case 'health check':
         return 'red';
       case 'installation':
         return 'purple';

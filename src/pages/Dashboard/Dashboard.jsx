@@ -52,9 +52,9 @@ const Dashboard = () => {
         return <Avatar icon={<SafetyCertificateOutlined />} style={{ backgroundColor: '#52c41a', ...iconStyle }} />;
       case 'paid':
         return <Avatar icon={<DollarOutlined />} style={{ backgroundColor: '#1677ff', ...iconStyle }} />;
-      case 'maintenance':
+      case 'amc':
         return <Avatar icon={<ToolOutlined />} style={{ backgroundColor: '#fa8c16', ...iconStyle }} />;
-      case 'repair':
+      case 'health check':
         return <Avatar icon={<BuildOutlined />} style={{ backgroundColor: '#f5222d', ...iconStyle }} />;
       case 'installation':
         return <Avatar icon={<SettingOutlined />} style={{ backgroundColor: '#722ed1', ...iconStyle }} />;

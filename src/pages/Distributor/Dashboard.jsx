@@ -1,88 +1,288 @@
-import React from 'react';
-import { Row, Col, Card, Statistic, Typography, List } from 'antd';
-import { 
-  ToolOutlined, 
-  FileTextOutlined, 
-  ClockCircleOutlined 
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Card, Statistic, Typography, List, Avatar, Spin, message } from 'antd';
+import {
+  UserOutlined,
+  ShoppingCartOutlined,
+  DollarOutlined,
+  BellOutlined,
+  ToolOutlined,
+  SafetyCertificateOutlined,
+  BuildOutlined,
+  SettingOutlined,
+  EyeOutlined,
+  TeamOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
+  AuditOutlined,
+  CalendarOutlined,
+  ToolFilled
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
+import { getDashboardStatistics, getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
+import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
+import './Dashboard.css';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
-const DistributorDashboard = () => {
+const Dashboard = () => {
   const { user } = useAuth();
-  
-  // Placeholder data - would be fetched from API in real implementation
-  const stats = {
-    totalMachines: 12,
-    serviceReports: 45,
-    pendingServices: 3
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 5, // Show only 5 recent activities on dashboard
+    total: 0
+  });
+
+  // Function to get icon based on service type
+  const getServiceTypeIcon = (serviceType) => {
+    const iconStyle = { fontSize: '16px' };
+    
+    switch (serviceType.toLowerCase()) {
+      case 'warranty':
+        return <Avatar icon={<SafetyCertificateOutlined />} style={{ backgroundColor: '#52c41a', ...iconStyle }} />;
+      case 'paid':
+        return <Avatar icon={<DollarOutlined />} style={{ backgroundColor: '#1677ff', ...iconStyle }} />;
+      case 'amc':
+        return <Avatar icon={<ToolOutlined />} style={{ backgroundColor: '#fa8c16', ...iconStyle }} />;
+      case 'health check':
+        return <Avatar icon={<BuildOutlined />} style={{ backgroundColor: '#f5222d', ...iconStyle }} />;
+      case 'installation':
+        return <Avatar icon={<SettingOutlined />} style={{ backgroundColor: '#722ed1', ...iconStyle }} />;
+      default:
+        return <Avatar icon={<BellOutlined />} style={{ backgroundColor: '#8c8c8c', ...iconStyle }} />;
+    }
   };
-  
-  const recentActivities = [
-    { id: 1, action: 'Service Report Added', machine: 'SN12345', date: '2023-11-01' },
-    { id: 2, action: 'Machine Registered', machine: 'SN23456', date: '2023-10-28' },
-    { id: 3, action: 'Service Report Updated', machine: 'SN12345', date: '2023-10-25' },
-    { id: 4, action: 'Machine Registered', machine: 'SN34567', date: '2023-10-20' },
-  ];
+
+  // Function to format relative time
+  const getRelativeTime = (dateString) => {
+    const now = new Date();
+    const activityDate = new Date(dateString);
+    const diffInMs = now - activityDate;
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInMinutes < 1) {
+      return 'Just now';
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    } else if (diffInDays < 7) {
+      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    } else {
+      return activityDate.toLocaleDateString();
+    }
+  };
+
+  // Handle clicking on an activity
+  const handleActivityClick = async (reportId) => {
+    try {
+      setModalLoading(true);
+      setModalVisible(true);
+      const reportDetail = await getServiceReportDetail(reportId);
+      setSelectedReport(reportDetail);
+    } catch (error) {
+      message.error('Failed to load service report details');
+      setModalVisible(false);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  // Close modal
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedReport(null);
+  };
+
+  // Fetch recent activities
+  const fetchRecentActivities = async () => {
+    try {
+      setLoading(true);
+      const response = await getRecentActivities({
+        page: pagination.page,
+        limit: pagination.limit,
+        sort_by: 'created_at',
+        sort_order: 'desc'
+      });
+
+      const formattedActivities = response.items.map(activity => ({
+        id: activity.report_id,
+        title: `${activity.user_name} created a ${activity.service_type_name} service report`,
+        when: getRelativeTime(activity.created_at),
+        avatar: getServiceTypeIcon(activity.service_type_name),
+        serviceType: activity.service_type_name,
+        userName: activity.user_name,
+        createdAt: activity.created_at
+      }));
+
+      setRecentActivities(formattedActivities);
+      setPagination(prev => ({
+        ...prev,
+        total: response.total
+      }));
+    } catch (error) {
+      console.error('Error fetching recent activities:', error);
+      message.error('Failed to load recent activities');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentActivities();
+  }, []);
 
   return (
-    <div className="distributor-dashboard">
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2}>Welcome, {user?.name || 'Distributor'}</Title>
-        <Text type="secondary">Here's an overview of your machines and service reports.</Text>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <Title level={2}>Welcome back, {user?.name || 'User'}</Title>
+        <p>Here's what's happening today</p>
       </div>
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic 
-              title="My Machines" 
-              value={stats.totalMachines} 
-              prefix={<ToolOutlined />}
-              valueStyle={{ color: '#1890ff' }} 
-            />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={8} lg={6}>
+          <Card 
+            size="small" 
+            style={{ overflow: 'hidden' }}
+            bodyStyle={{ 
+              height: '70px', 
+              padding: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}
+          >
+            <div className="statistic-container">
+              <div className="statistic-title">Machines Sold</div>
+              <div className="statistic-content">
+                <ShoppingCartOutlined style={{ color: '#1890ff', marginRight: '8px' }} />
+                <span style={{ color: '#1890ff', fontSize: '18px' }}>12</span>
+              </div>
+            </div>
           </Card>
         </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic 
-              title="Service Reports" 
-              value={stats.serviceReports} 
-              prefix={<FileTextOutlined />} 
-              valueStyle={{ color: '#52c41a' }}
-            />
+        <Col xs={24} sm={8} lg={6}>
+          <Card 
+            size="small" 
+            style={{ overflow: 'hidden' }}
+            bodyStyle={{ 
+              height: '70px', 
+              padding: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}
+          >
+            <div className="statistic-container">
+              <div className="statistic-title">Active AMC Contracts</div>
+              <div className="statistic-content">
+                <AuditOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
+                <span style={{ color: '#52c41a', fontSize: '18px' }}>5</span>
+              </div>
+            </div>
           </Card>
         </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic 
-              title="Pending Services" 
-              value={stats.pendingServices} 
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: stats.pendingServices > 0 ? '#faad14' : '#52c41a' }}
-            />
+        <Col xs={24} sm={8} lg={6}>
+          <Card 
+            size="small" 
+            style={{ overflow: 'hidden' }}
+            bodyStyle={{ 
+              height: '70px', 
+              padding: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}
+          >
+            <div className="statistic-container">
+              <div className="statistic-title">Service Reports</div>
+              <div className="statistic-content">
+                <ToolFilled style={{ color: '#722ed1', marginRight: '8px' }} />
+                <span style={{ color: '#722ed1', fontSize: '18px' }}>8</span>
+              </div>
+            </div>
           </Card>
         </Col>
       </Row>
 
-      <Card title="Recent Activities" style={{ marginTop: 24 }}>
-        <List
-          itemLayout="horizontal"
-          dataSource={recentActivities}
-          renderItem={(item) => (
-            <List.Item>
-              <List.Item.Meta
-                title={item.action}
-                description={`Machine: ${item.machine}`}
-              />
-              <div>{item.date}</div>
-            </List.Item>
-          )}
-        />
-      </Card>
+      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
+        <Col xs={24} lg={16}>
+          <Card title="Overview">
+            <div className="dashboard-chart-placeholder">
+              {/* In a real app, you would put a chart or graph here */}
+              <div className="placeholder-text">
+                Analytics chart will be displayed here
+              </div>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} lg={8}>
+          <Card 
+            title="My Recent Activities" 
+            className="recent-activities-card"
+            extra={
+              <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                {pagination.total} total activities
+              </span>
+            }
+          >
+            <Spin spinning={loading}>
+              {recentActivities.length > 0 ? (
+                <List
+                  itemLayout="horizontal"
+                  dataSource={recentActivities}
+                  renderItem={(item) => (
+                    <List.Item 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleActivityClick(item.id)}
+                      actions={[<EyeOutlined key="view" />]}
+                    >
+                      <List.Item.Meta
+                        avatar={item.avatar}
+                        title={
+                          <div style={{ fontSize: '14px' }}>
+                            {item.title}
+                          </div>
+                        }
+                        description={
+                          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                            {item.when}
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#8c8c8c' }}>
+                  You have no recent activities
+                </div>
+              )}
+            </Spin>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Service Report Details Modal */}
+      <ServiceReportDetailsModal
+        visible={modalVisible}
+        onClose={handleModalClose}
+        reportData={selectedReport}
+        loading={modalLoading}
+      />
     </div>
   );
 };
 
-export default DistributorDashboard;
+export default Dashboard;

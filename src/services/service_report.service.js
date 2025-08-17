@@ -107,3 +107,39 @@ export const createCustomerRecord = async (customerData) => {
   }
 };
 
+export const downloadServiceReportPDF = async (reportId) => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/service-reports/${reportId}/pdf`, {
+      responseType: 'blob'
+    });
+    
+    // Create blob link to download
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Extract filename from response headers or use default
+    const contentDisposition = response.headers['content-disposition'];
+    let filename = `service_report_${reportId.substring(0, 8)}.pdf`;
+    
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (filenameMatch) {
+        filename = filenameMatch[1];
+      }
+    }
+    
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    
+    return { success: true, filename };
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+

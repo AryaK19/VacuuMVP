@@ -10,7 +10,7 @@ import {
   FilePdfOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import { downloadServiceReportPDF } from '../../services/dashboard.service';
+import { downloadServiceReportPDF } from '../../services/service_report.service';
 import './ServiceReportDetailsModal.css';
 
 const { Title, Text } = Typography;

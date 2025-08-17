@@ -81,3 +81,40 @@ export const createPart = async (formData) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+/**
+ * Get detailed machine information
+ */
+export const getMachineDetails = async (machineId) => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/machines/details/${machineId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching machine details:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
+/**
+ * Get service reports for a specific machine
+ */
+export const getMachineServiceReports = async (machineId, params = {}) => {
+  prepareRequest();
+  try {
+    const defaultParams = {
+      page: 1,
+      limit: 10,
+      sort_by: 'created_at',
+      sort_order: 'desc'
+    };
+    
+    const queryParams = { ...defaultParams, ...params };
+    
+    const response = await axios.get(`${API_URL}/machines/${machineId}/service-reports`, { params: queryParams });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching machine service reports:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

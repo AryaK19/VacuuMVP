@@ -120,13 +120,14 @@ const Parts = () => {
     {
       title: () => (
         <span>
-          <BarcodeOutlined className="header-icon" /> Serial No
+          <NumberOutlined className="header-icon" /> Part No
         </span>
       ),
-      dataIndex: 'serial_no',
-      key: 'serial_no',
+      dataIndex: 'part_no',
+      key: 'part_no',
       sorter: true,
     },
+    
     {
       title: () => (
         <span>
@@ -147,16 +148,7 @@ const Parts = () => {
         </div>
       ),
     },
-    {
-      title: () => (
-        <span>
-          <NumberOutlined className="header-icon" /> Part No
-        </span>
-      ),
-      dataIndex: 'part_no',
-      key: 'part_no',
-      sorter: true,
-    },
+
     
     {
       title: 'Actions',

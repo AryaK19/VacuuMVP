@@ -685,10 +685,10 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
                               <Option 
                                 key={part.id} 
                                 value={part.id}
-                                label={`${part.serial_no} - ${part.model_no}`}
+                                label={`${part.part_no} - ${part.model_no}`}
                               >
                                 <div className="part-option">
-                                  <div className="part-option-title">{part.serial_no} - {part.model_no}</div>
+                                  <div className="part-option-title">{part.model_no}</div>
                                   <div className="part-option-subtitle">Part No: {part.part_no}</div>
                                 </div>
                               </Option>

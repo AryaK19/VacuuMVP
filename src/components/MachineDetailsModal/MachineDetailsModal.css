@@ -1,0 +1,532 @@
+.machine-details-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  background: #f9fbfd;
+  border-radius: 8px 8px 0 0;
+}
+
+.machine-details-modal .ant-modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.machine-details-modal .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.machine-details-modal .ant-modal-body {
+  padding: 20px;
+}
+
+.machine-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1890ff;
+}
+
+.modal-icon {
+  font-size: 20px;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+/* Stats Row */
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  height: 80px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .ant-card-body {
+  padding: 12px 16px;
+  height: 100%;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+}
+
+.stat-icon {
+  font-size: 24px;
+  opacity: 0.8;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-title {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Main Content Layout */
+.main-content {
+  margin-top: 0;
+}
+
+.left-section,
+.right-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Image Card */
+.image-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+}
+
+.machine-image-container {
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 220px; /* Reduced from 280px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.machine-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.machine-no-image {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+.no-image-icon {
+  font-size: 40px;
+  color: #d9d9d9;
+  margin-bottom: 12px;
+}
+
+/* Specifications Card */
+.spec-card {
+  flex: 1;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.spec-item {
+  background: #f9fbfd;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #1890ff;
+}
+
+.spec-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.spec-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.spec-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Info Cards */
+.info-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  flex: 1;
+}
+
+.info-card .ant-card-head {
+  /* padding: 12px 16px; */
+  min-height: auto;
+  border-bottom: 1px solid #f0f0f0;
+  background: #f9fbfd;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1890ff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-title-icon {
+  font-size: 16px;
+}
+
+.info-card .ant-card-body {
+  padding: 16px;
+}
+
+.count-badge {
+  margin-left: 8px;
+}
+
+.count-badge .ant-badge-count {
+  background-color: #1890ff;
+  box-shadow: none;
+  font-size: 12px;
+  height: 18px;
+  min-width: 18px;
+  line-height: 18px;
+}
+
+/* Customer Information */
+.customer-card .ant-row {
+  gap: 0 !important;
+}
+
+.customer-info-item {
+  display: flex;
+  align-items: flex-start;
+  background: #f9fbfd;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid #1890ff;
+  word-break: break-word;
+}
+
+.customer-address-item {
+  min-height: 80px;
+}
+
+.customer-detail-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.customer-icon {
+  margin-right: 12px;
+  font-size: 16px;
+  color: #1890ff;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.customer-label {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 12px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.customer-value {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  font-size: 14px;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* Service Reports Table */
+.service-card {
+  min-height: 400px;
+  margin-top: 16px;
+}
+
+.service-reports-table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.service-reports-table .ant-table-thead > tr > th {
+  background-color: #f9fbfd;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+  padding: 10px 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.service-reports-table .ant-table-tbody > tr > td {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.service-reports-table .ant-table-tbody > tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.service-reports-table .ant-table-tbody > tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.service-reports-table .ant-table-tbody > tr:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+.service-type-tag {
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: none;
+}
+
+.service-person {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.person-icon, .date-icon {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.problem-text, .solution-text {
+  line-height: 1.5;
+  font-size: 13px;
+  max-width: 300px; /* Ensure reasonable width for better readability */
+  white-space: normal;
+  word-break: break-word;
+}
+
+.service-date {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+}
+
+.empty-reports {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f9fbfd;
+  border-radius: 6px;
+}
+
+/* Tab styling */
+.machine-details-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+.machine-details-tabs .ant-tabs-tab {
+  padding: 12px 16px;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.machine-details-tabs .ant-tabs-tab:hover {
+  color: #1890ff;
+}
+
+.machine-details-tabs .ant-tabs-tab-active {
+  font-weight: 600;
+}
+
+.machine-details-tabs .ant-tabs-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-badge {
+  margin-left: 8px;
+}
+
+.tab-badge .ant-badge-count {
+  background-color: #1890ff;
+  box-shadow: none;
+  font-size: 10px;
+  height: 16px;
+  min-width: 16px;
+  line-height: 16px;
+  padding: 0 4px;
+}
+
+/* Service reports tab */
+.service-reports-tab {
+  padding: 0;
+  min-height: 500px;
+}
+
+.reports-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.search-container {
+  width: 300px;
+}
+
+.reports-count {
+  display: flex;
+  align-items: center;
+}
+
+.reports-count-label {
+  margin-right: 4px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.reports-count .ant-badge-count {
+  background-color: #1890ff;
+  box-shadow: none;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .machine-details-modal {
+    width: 95% !important;
+    max-width: 1000px;
+  }
+}
+
+@media (max-width: 992px) {
+  .left-section,
+  .right-section {
+    gap: 12px;
+  }
+  
+  .machine-image-container {
+    height: 220px;
+  }
+  
+  .spec-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .spec-item.full-width {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .machine-details-modal {
+    width: 95% !important;
+    max-width: 600px;
+  }
+  
+  .machine-details-modal .ant-modal-body {
+    padding: 16px;
+  }
+  
+  .stats-row {
+    margin-bottom: 16px;
+  }
+  
+  .stat-card {
+    height: 70px;
+  }
+  
+  .stat-content {
+    gap: 8px;
+  }
+  
+  .stat-icon {
+    font-size: 20px;
+  }
+  
+  .stat-value {
+    font-size: 14px;
+  }
+  
+  .machine-image-container {
+    height: 180px;
+  }
+  
+  .main-content {
+    gap: 16px;
+  }
+  
+  .customer-info-item {
+    padding: 10px;
+    margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-row {
+    gap: 8px;
+  }
+  
+  .stat-card {
+    height: 65px;
+  }
+  
+  .stat-content {
+    gap: 6px;
+  }
+  
+  .stat-icon {
+    font-size: 18px;
+  }
+  
+  .stat-title {
+    font-size: 10px;
+  }
+  
+  .stat-value {
+    font-size: 13px;
+  }
+}

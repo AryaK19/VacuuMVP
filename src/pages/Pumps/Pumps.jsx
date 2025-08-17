@@ -25,6 +25,7 @@ import {
 } from '@ant-design/icons';
 import { getPumps } from '../../services/machine.service';
 import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
+import MachineDetailsModal from '../../components/MachineDetailsModal/MachineDetailsModal';
 import './Pumps.css';
 
 const { Title } = Typography;
@@ -41,6 +42,8 @@ const Pumps = () => {
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showCreationModal, setShowCreationModal] = useState(false);
+  const [selectedMachineId, setSelectedMachineId] = useState(null);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
   useEffect(() => {
     fetchPumps();
@@ -117,6 +120,11 @@ const Pumps = () => {
     fetchPumps(); // Refresh the list
   };
 
+  const handleViewMachine = (machineId) => {
+    setSelectedMachineId(machineId);
+    setDetailsModalVisible(true);
+  };
+
   const columns = [
     {
       title: () => (
@@ -170,7 +178,7 @@ const Pumps = () => {
               type="primary" 
               icon={<EyeOutlined />} 
               size="small"
-              onClick={() => console.log('View pump details:', record)}
+              onClick={() => handleViewMachine(record.id)}
             />
           </Tooltip>
           <Tooltip title="Edit">
@@ -260,6 +268,12 @@ const Pumps = () => {
         onSuccess={handleCreationSuccess}
         type="pump"
         title="Create New Pump"
+      />
+      
+      <MachineDetailsModal
+        visible={detailsModalVisible}
+        machineId={selectedMachineId}
+        onCancel={() => setDetailsModalVisible(false)}
       />
     </div>
   );

@@ -189,14 +189,14 @@ const PartsContent = () => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle" className="action-column">
-          <Tooltip title="View Details">
+          {/* <Tooltip title="View Details">
             <Button 
               type="primary" 
               icon={<EyeOutlined />} 
               size="small"
               onClick={() => console.log('View part details:', record)}
             />
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip title="Edit">
             <Button 
               type="default" 

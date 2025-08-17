@@ -20,7 +20,6 @@ import {
   TagOutlined,
   NumberOutlined,
   UserOutlined,
-  EditOutlined,
   DeleteOutlined,
   PlusOutlined,
   ExclamationCircleOutlined
@@ -213,14 +212,6 @@ const PumpsContent = () => {
               icon={<EyeOutlined />} 
               size="small"
               onClick={() => handleViewMachine(record.id)}
-            />
-          </Tooltip>
-          <Tooltip title="Edit">
-            <Button 
-              type="default" 
-              icon={<EditOutlined />} 
-              size="small"
-              onClick={() => console.log('Edit pump:', record)}
             />
           </Tooltip>
           <Tooltip title="Delete">

@@ -14,7 +14,8 @@ import {
   Table,
   Tag,
   Input,
-  message
+  message,
+  Button
 } from 'antd';
 import { 
   CalendarOutlined, 
@@ -29,10 +30,12 @@ import {
   IdcardOutlined,
   ShoppingCartOutlined,
   DashboardOutlined,
-  SearchOutlined
+  SearchOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { getMachineDetails, getMachineServiceReports } from '../../services/machine.service';
 import ModalWrapper from '../ModalWrapper/ModalWrapper';
+import CustomerRegistrationForm from '../CustomerRegistrationForm/CustomerRegistrationForm';
 import './MachineDetailsModal.css';
 
 const { Title, Text } = Typography;
@@ -63,6 +66,7 @@ const MachineDetailsModal = ({
     total: 0
   });
   const [searchText, setSearchText] = useState('');
+  const [showCustomerRegistration, setShowCustomerRegistration] = useState(false);
 
   useEffect(() => {
     if (visible && machineId) {
@@ -82,6 +86,7 @@ const MachineDetailsModal = ({
       const response = await getMachineDetails(machineId);
       if (response.success) {
         setMachine(response.machine);
+        // Remove automatic modal opening
       } else {
         throw new Error("Failed to fetch machine details");
       }
@@ -137,6 +142,22 @@ const MachineDetailsModal = ({
   const handleSearch = () => {
     setReportsPagination({ ...reportsPagination, current: 1 });
     fetchServiceReports(searchText);
+  };
+
+  const handleRegisterCustomer = () => {
+    setShowCustomerRegistration(true);
+  };
+
+  const handleCustomerRegistrationCancel = () => {
+    setShowCustomerRegistration(false);
+  };
+
+  const handleCustomerRegistrationSuccess = (updatedMachine) => {
+    setMachine(updatedMachine);
+    setShowCustomerRegistration(false);
+    message.success('Customer registered successfully!');
+    // Reload machine details to get fresh data
+    fetchMachineDetails();
   };
 
   const serviceReportColumns = [
@@ -275,8 +296,8 @@ const MachineDetailsModal = ({
         
         <Col xs={24} lg={16}>
           <div className="right-section">
-            {/* Customer Information (if sold) */}
-            {machine.is_sold && machine.sold_info && (
+            {/* Customer Information or Registration Button */}
+            {machine.is_sold && machine.sold_info ? (
               <Card 
                 title={
                   <div className="card-title">
@@ -336,6 +357,33 @@ const MachineDetailsModal = ({
                   )}
                 </Row>
               </Card>
+            ) : (
+              <Card 
+                title={
+                  <div className="card-title">
+                    <UserOutlined className="card-title-icon" /> Customer Information
+                  </div>
+                } 
+                className="info-card customer-card" 
+                bordered={false}
+              >
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                  <UserOutlined style={{ fontSize: '48px', color: '#d9d9d9', marginBottom: '16px' }} />
+                  <div style={{ marginBottom: '16px' }}>
+                    <Text type="secondary" style={{ fontSize: '16px' }}>
+                      No customer registered for this machine
+                    </Text>
+                  </div>
+                  <Button 
+                    type="primary" 
+                    icon={<PlusOutlined />}
+                    size="large"
+                    onClick={handleRegisterCustomer}
+                  >
+                    Register Customer
+                  </Button>
+                </div>
+              </Card>
             )}
           </div>
         </Col>
@@ -390,99 +438,108 @@ const MachineDetailsModal = ({
   );
 
   return (
-    <ModalWrapper
-      visible={visible}
-      onCancel={onCancel}
-      title="Machine Details"
-      footer={null}
-      width={1200}
-      className="machine-details-modal"
-      {...restProps}
-    >
-      {loading ? (
-        <div className="loading-container">
-          <Spin size="large" />
-        </div>
-      ) : machine ? (
-        <div className="machine-details-content">
-          {/* Top Stats Row */}
-          <Row gutter={[12, 12]} className="stats-row">
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<ToolOutlined />}
-                title="Status"
-                value={machine.is_sold ? "Sold" : "Available"}
-                color={machine.is_sold ? "#52c41a" : "#1890ff"}
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<IdcardOutlined />}
-                title="Model"
-                value={machine.model_no}
-                color="#722ed1"
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<DashboardOutlined />}
-                title="Type"
-                value={machine.machine_type?.type || 'N/A'}
-                color="#fa8c16"
-              />
-            </Col>
-            <Col xs={12} sm={6}>
-              <StatCard
-                icon={<HistoryOutlined />}
-                title="Service Reports"
-                value={reportsPagination.total || 0}
-                color="#eb2f96"
-              />
-            </Col>
-          </Row>
+    <>
+      <ModalWrapper
+        visible={visible}
+        onCancel={onCancel}
+        title="Machine Details"
+        footer={null}
+        width={1200}
+        className="machine-details-modal"
+        {...restProps}
+      >
+        {loading ? (
+          <div className="loading-container">
+            <Spin size="large" />
+          </div>
+        ) : machine ? (
+          <div className="machine-details-content">
+            {/* Top Stats Row */}
+            <Row gutter={[12, 12]} className="stats-row">
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<ToolOutlined />}
+                  title="Status"
+                  value={machine.is_sold ? "Sold" : "Available"}
+                  color={machine.is_sold ? "#52c41a" : "#1890ff"}
+                />
+              </Col>
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<IdcardOutlined />}
+                  title="Model"
+                  value={machine.model_no}
+                  color="#722ed1"
+                />
+              </Col>
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<DashboardOutlined />}
+                  title="Type"
+                  value={machine.machine_type?.type || 'N/A'}
+                  color="#fa8c16"
+                />
+              </Col>
+              <Col xs={12} sm={6}>
+                <StatCard
+                  icon={<HistoryOutlined />}
+                  title="Service Reports"
+                  value={reportsPagination.total || 0}
+                  color="#eb2f96"
+                />
+              </Col>
+            </Row>
 
-          {/* Tab navigation */}
-          <Tabs 
-            activeKey={activeTab}
-            onChange={handleTabChange}
-            className="machine-details-tabs"
-            items={[
-              {
-                key: 'details',
-                label: (
-                  <span>
-                    <ToolOutlined /> Machine Details
-                  </span>
-                ),
-                children: renderMachineDetails()
-              },
-              {
-                key: 'reports',
-                label: (
-                  <span>
-                    <HistoryOutlined /> Service Reports
-                    <Badge 
-                      count={reportsPagination.total || 0}
-                      showZero
-                      className="tab-badge"
-                      size="small"
-                    />
-                  </span>
-                ),
-                children: renderServiceReports()
-              }
-            ]}
-          />
-        </div>
-      ) : (
-        <div className="error-container">
-          <Empty 
-            description={<Text type="danger">Failed to load machine details.</Text>}
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
-        </div>
-      )}
-    </ModalWrapper>
+            {/* Tab navigation */}
+            <Tabs 
+              activeKey={activeTab}
+              onChange={handleTabChange}
+              className="machine-details-tabs"
+              items={[
+                {
+                  key: 'details',
+                  label: (
+                    <span>
+                      <ToolOutlined /> Machine Details
+                    </span>
+                  ),
+                  children: renderMachineDetails()
+                },
+                {
+                  key: 'reports',
+                  label: (
+                    <span>
+                      <HistoryOutlined /> Service Reports
+                      <Badge 
+                        count={reportsPagination.total || 0}
+                        showZero
+                        className="tab-badge"
+                        size="small"
+                      />
+                    </span>
+                  ),
+                  children: renderServiceReports()
+                }
+              ]}
+            />
+          </div>
+        ) : (
+          <div className="error-container">
+            <Empty 
+              description={<Text type="danger">Failed to load machine details.</Text>}
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          </div>
+        )}
+      </ModalWrapper>
+
+      <CustomerRegistrationForm
+        visible={showCustomerRegistration}
+        machine={machine}
+        onCancel={handleCustomerRegistrationCancel}
+        onSuccess={handleCustomerRegistrationSuccess}
+      />
+    </>
   );
 };
 

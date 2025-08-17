@@ -44,11 +44,19 @@ const MachineCreationModal = ({
       // Add form fields to FormData
       Object.keys(values).forEach(key => {
         if (key === 'files' && values[key]) {
-          values[key].forEach(file => {
-            if (file.originFileObj) {
-              formData.append('files', file.originFileObj);
-            }
-          });
+          // Fix: Check if fileList exists and is an array
+          const fileList = Array.isArray(values[key]) ? values[key] : values[key].fileList;
+          
+          if (Array.isArray(fileList)) {
+            fileList.forEach(file => {
+              if (file.originFileObj) {
+                formData.append('files', file.originFileObj);
+              }
+            });
+          } else if (values[key].originFileObj) {
+            // Handle case where a single file object is provided
+            formData.append('files', values[key].originFileObj);
+          }
         } else if (values[key] !== undefined) {
           formData.append(key, values[key]);
         }
@@ -68,6 +76,13 @@ const MachineCreationModal = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
   };
 
   return (
@@ -131,6 +146,8 @@ const MachineCreationModal = ({
         <Form.Item
           name="files"
           label="Upload Files (Optional)"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
         >
           <Upload
             multiple
@@ -155,4 +172,3 @@ const MachineCreationModal = ({
 };
 
 export default MachineCreationModal;
-        

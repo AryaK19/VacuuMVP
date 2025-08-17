@@ -19,9 +19,11 @@ import {
   NumberOutlined,
   CalendarOutlined,
   EditOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { getParts } from '../../services/machine.service';
+import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
 import './Parts.css';
 
 const { Title } = Typography;
@@ -37,6 +39,7 @@ const Parts = () => {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [showCreationModal, setShowCreationModal] = useState(false);
 
   useEffect(() => {
     fetchParts();
@@ -102,6 +105,15 @@ const Parts = () => {
     setSortField('created_at');
     setSortOrder('desc');
     fetchParts('');
+  };
+
+  const handleAddPart = () => {
+    setShowCreationModal(true);
+  };
+
+  const handleCreationSuccess = () => {
+    setShowCreationModal(false);
+    fetchParts(); // Refresh the list
   };
 
   const columns = [
@@ -183,30 +195,40 @@ const Parts = () => {
 
   return (
     <div className="parts-page">
-      <Card>        
+      <Card>
         <div className="parts-filter">
-          <Space size="large">
-            <Input
-              placeholder="Search parts"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onPressEnter={handleSearch}
-              prefix={<SearchOutlined />}
-              style={{ width: 200 }}
-            />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Space size="large">
+              <Input
+                placeholder="Search parts"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onPressEnter={handleSearch}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+              />
+              <Button 
+                type="primary" 
+                onClick={handleSearch}
+              >
+                Search
+              </Button>
+              <Button
+                icon={<SyncOutlined />}
+                onClick={handleRefresh}
+              >
+                Reset
+              </Button>
+            </Space>
+            
             <Button 
               type="primary" 
-              onClick={handleSearch}
+              icon={<PlusOutlined />}
+              onClick={handleAddPart}
             >
-              Search
+              Add Part
             </Button>
-            <Button
-              icon={<SyncOutlined />}
-              onClick={handleRefresh}
-            >
-              Reset
-            </Button>
-          </Space>
+          </div>
         </div>
         
         <div className="parts-table">
@@ -229,6 +251,14 @@ const Parts = () => {
           </Spin>
         </div>
       </Card>
+      
+      <MachineCreationModal
+        visible={showCreationModal}
+        onCancel={() => setShowCreationModal(false)}
+        onSuccess={handleCreationSuccess}
+        type="part"
+        title="Create New Part"
+      />
     </div>
   );
 };

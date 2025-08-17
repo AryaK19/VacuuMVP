@@ -8,6 +8,7 @@ import {
   Typography, 
   Spin, 
   Tooltip,
+  Tag,
   message 
 } from 'antd';
 import { 
@@ -19,9 +20,11 @@ import {
   NumberOutlined,
   UserOutlined,
   EditOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { getPumps } from '../../services/machine.service';
+import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
 import './Pumps.css';
 
 const { Title } = Typography;
@@ -37,6 +40,7 @@ const Pumps = () => {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [showCreationModal, setShowCreationModal] = useState(false);
 
   useEffect(() => {
     fetchPumps();
@@ -102,6 +106,15 @@ const Pumps = () => {
     setSortField('created_at');
     setSortOrder('desc');
     fetchPumps('');
+  };
+
+  const handleAddPump = () => {
+    setShowCreationModal(true);
+  };
+
+  const handleCreationSuccess = () => {
+    setShowCreationModal(false);
+    fetchPumps(); // Refresh the list
   };
 
   const columns = [
@@ -186,28 +199,38 @@ const Pumps = () => {
     <div className="pumps-page">
       <Card>
         <div className="pumps-filter">
-          <Space size="large">
-            <Input
-              placeholder="Search pumps"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onPressEnter={handleSearch}
-              prefix={<SearchOutlined />}
-              style={{ width: 200 }}
-            />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Space size="large">
+              <Input
+                placeholder="Search pumps"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onPressEnter={handleSearch}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+              />
+              <Button 
+                type="primary" 
+                onClick={handleSearch}
+              >
+                Search
+              </Button>
+              <Button
+                icon={<SyncOutlined />}
+                onClick={handleRefresh}
+              >
+                Reset
+              </Button>
+            </Space>
+            
             <Button 
               type="primary" 
-              onClick={handleSearch}
+              icon={<PlusOutlined />}
+              onClick={handleAddPump}
             >
-              Search
+              Add Pump
             </Button>
-            <Button
-              icon={<SyncOutlined />}
-              onClick={handleRefresh}
-            >
-              Reset
-            </Button>
-          </Space>
+          </div>
         </div>
         
         <div className="pumps-table">
@@ -230,6 +253,14 @@ const Pumps = () => {
           </Spin>
         </div>
       </Card>
+      
+      <MachineCreationModal
+        visible={showCreationModal}
+        onCancel={() => setShowCreationModal(false)}
+        onSuccess={handleCreationSuccess}
+        type="pump"
+        title="Create New Pump"
+      />
     </div>
   );
 };

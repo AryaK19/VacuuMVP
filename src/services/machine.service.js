@@ -51,3 +51,33 @@ export const getParts = async (params = {}) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+export const createPump = async (formData) => {
+  prepareRequest();
+  try {
+    const response = await axios.post(`${API_URL}/machines/pumps/create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating pump:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
+export const createPart = async (formData) => {
+  prepareRequest();
+  try {
+    const response = await axios.post(`${API_URL}/machines/parts/create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating part:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

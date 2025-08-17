@@ -1,0 +1,47 @@
+.user-registration-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.user-registration-modal .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.user-registration-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.user-registration-form .ant-form-item-label > label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.user-registration-form .ant-input-affix-wrapper {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s;
+}
+
+.user-registration-form .ant-input-affix-wrapper:focus,
+.user-registration-form .ant-input-affix-wrapper-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.registration-error-alert {
+  border-radius: 6px;
+}
+
+.user-registration-form .ant-btn-primary {
+  background: #1890ff;
+  border-color: #1890ff;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.user-registration-form .ant-btn-primary:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}

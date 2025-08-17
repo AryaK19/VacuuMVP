@@ -8,7 +8,6 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 // Pages
 import Login from './pages/Login/Login';
-import Register from './pages/Register/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Pumps from './pages/Pumps/Pumps';
 import Parts from './pages/Parts/Parts';
@@ -37,7 +36,6 @@ function App() {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
             
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>

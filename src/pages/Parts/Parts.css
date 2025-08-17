@@ -5,9 +5,9 @@
 
 .parts-filter {
   margin-bottom: 24px;
-  display: flex;
+  /* display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; */
 }
 
 .parts-table {

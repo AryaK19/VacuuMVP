@@ -20,9 +20,11 @@ import {
   PhoneOutlined,
   CalendarOutlined,
   EditOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { getDistributors } from '../../services/user.service';
+import UserRegistrationModal from '../../components/UserRegistrationModal/UserRegistrationModal';
 import './Distributors.css';
 
 const { Title } = Typography;
@@ -38,6 +40,7 @@ const Distributors = () => {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   useEffect(() => {
     fetchDistributors();
@@ -103,6 +106,15 @@ const Distributors = () => {
     setSortField('created_at');
     setSortOrder('desc');
     fetchDistributors('');
+  };
+
+  const handleAddDistributor = () => {
+    setShowRegistrationModal(true);
+  };
+
+  const handleRegistrationSuccess = () => {
+    setShowRegistrationModal(false);
+    fetchDistributors(); // Refresh the list
   };
 
   const getStatusTag = (isActive) => {
@@ -203,31 +215,40 @@ const Distributors = () => {
   return (
     <div className="distributors-page">
       <Card>
-        <Title level={2}>Distributors Management</Title>
         
         <div className="distributors-filter">
-          <Space size="large">
-            <Input
-              placeholder="Search distributors"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onPressEnter={handleSearch}
-              prefix={<SearchOutlined />}
-              style={{ width: 200 }}
-            />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Space size="large">
+              <Input
+                placeholder="Search distributors"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onPressEnter={handleSearch}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+              />
+              <Button 
+                type="primary" 
+                onClick={handleSearch}
+              >
+                Search
+              </Button>
+              <Button
+                icon={<SyncOutlined />}
+                onClick={handleRefresh}
+              >
+                Reset
+              </Button>
+            </Space>
+            
             <Button 
               type="primary" 
-              onClick={handleSearch}
+              icon={<PlusOutlined />}
+              onClick={handleAddDistributor}
             >
-              Search
+              Add Distributor
             </Button>
-            <Button
-              icon={<SyncOutlined />}
-              onClick={handleRefresh}
-            >
-              Reset
-            </Button>
-          </Space>
+          </div>
         </div>
         
         <div className="distributors-table">
@@ -250,6 +271,14 @@ const Distributors = () => {
           </Spin>
         </div>
       </Card>
+      
+      <UserRegistrationModal
+        visible={showRegistrationModal}
+        onCancel={() => setShowRegistrationModal(false)}
+        onSuccess={handleRegistrationSuccess}
+        role="distributer"
+        title="Register New Distributor"
+      />
     </div>
   );
 };

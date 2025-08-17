@@ -1,68 +1,53 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  getCurrentUser, 
-  getCurrentSession, 
-  isAuthenticated, 
-  setAuthHeader, 
-  checkAndRefreshToken 
-} from '../services/auth.service';
+import { getCurrentUser, isAuthenticated, checkAndRefreshToken } from '../services/auth.service';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in on page load
-    const checkAuth = async () => {
-      if (isAuthenticated()) {
-        // Check and refresh token if needed
-        await checkAndRefreshToken();
-        
-        // Get current user data
-        const userData = getCurrentUser();
-        const sessionData = getCurrentSession();
-        
-        if (userData && sessionData) {
-          // Restore auth header with the token
-          setAuthHeader(sessionData.access_token);
-          setUser(userData);
-        }
+    const initAuth = async () => {
+      setLoading(true);
+      
+      // Check if user is authenticated
+      const authenticated = await checkAndRefreshToken();
+      if (authenticated) {
+        // Get current user from localStorage
+        const currentUser = getCurrentUser();
+        setUser(currentUser);
       }
+      
       setLoading(false);
     };
     
-    checkAuth();
+    initAuth();
   }, []);
 
-  // Set up periodic token refresh (every 10 minutes)
-  useEffect(() => {
-    if (!user) return;
+  const getRedirectPath = (user) => {
+    if (!user) return '/login';
     
-    const refreshInterval = setInterval(async () => {
-      await checkAndRefreshToken();
-    }, 10 * 60 * 1000); // 10 minutes
+    if (user.role === 'distributer') {
+      return '/distributor/dashboard';
+    } else if (user.role === 'admin') {
+      return '/dashboard';
+    }
     
-    return () => clearInterval(refreshInterval);
-  }, [user]);
-
-  const value = {
-    user,
-    setUser,
-    loading,
-    isAuthenticated: !!user,
+    // Default to admin dashboard for unknown roles
+    return '/dashboard';
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, setUser, loading, getRedirectPath }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === null) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  return useContext(AuthContext);
 };
 
 export default AuthContext;
+

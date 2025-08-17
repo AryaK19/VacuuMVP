@@ -1,0 +1,108 @@
+.service-report-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.service-report-modal .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.service-report-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.step-content {
+  min-height: 200px;
+  padding: 16px 0;
+}
+
+.steps-action {
+  text-align: right;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.service-report-modal .ant-steps {
+  margin-bottom: 24px;
+}
+
+.service-report-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.service-report-modal .ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+.service-report-modal .ant-upload-list-picture-card .ant-upload-list-item {
+  width: 104px;
+  height: 104px;
+}
+
+.service-report-modal .ant-upload-select-picture-card {
+  width: 104px;
+  height: 104px;
+}
+
+.machine-summary-card {
+  background: #f9f9f9;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.machine-summary-card .ant-card-head {
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.machine-summary-card .ant-card-head-title {
+  color: #52c41a;
+  font-weight: 500;
+}
+
+.machine-image-placeholder {
+  width: 100%;
+  height: 80px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d9d9d9;
+  color: #999;
+}
+
+.machine-details-row {
+  margin-bottom: 8px;
+}
+
+.machine-detail-item {
+  margin-bottom: 8px;
+}
+
+.machine-detail-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 2px;
+}
+
+.machine-detail-value {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+@media (max-width: 768px) {
+  .service-report-modal {
+    width: 95% !important;
+    margin: 10px;
+  }
+  
+  .step-content {
+    min-height: 150px;
+  }
+}

@@ -10,9 +10,14 @@ import {
   BuildOutlined,
   SettingOutlined,
   EyeOutlined,
+  TeamOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
-import { getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
+import { getDashboardStatistics, getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
 import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 import './Dashboard.css';
 
@@ -21,7 +26,14 @@ const { Title } = Typography;
 const Dashboard = () => {
   const { user } = useAuth();
   const [recentActivities, setRecentActivities] = useState([]);
+  const [dashboardStats, setDashboardStats] = useState({
+    total_distributors: 0,
+    sold_machines: 0,
+    available_machines: 0,
+    monthly_service_reports: 0
+  });
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
@@ -94,6 +106,20 @@ const Dashboard = () => {
     setSelectedReport(null);
   };
 
+  // Fetch dashboard statistics
+  const fetchDashboardStats = async () => {
+    try {
+      setStatsLoading(true);
+      const stats = await getDashboardStatistics();
+      setDashboardStats(stats);
+    } catch (error) {
+      console.error('Error fetching dashboard statistics:', error);
+      message.error('Failed to load dashboard statistics');
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   // Fetch recent activities
   const fetchRecentActivities = async () => {
     try {
@@ -129,6 +155,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    fetchDashboardStats();
     fetchRecentActivities();
   }, []);
 
@@ -140,42 +167,40 @@ const Dashboard = () => {
       </div>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card>
-            <Statistic
-              title="Total Users"
-              value={1238}
-              prefix={<UserOutlined />}
-            />
+            <Spin spinning={statsLoading}>
+              <Statistic
+                title="Total Distributors"
+                value={dashboardStats.total_distributors}
+                prefix={<TeamOutlined />}
+                valueStyle={{ color: '#1890ff' }}
+              />
+            </Spin>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card>
-            <Statistic
-              title="Total Orders"
-              value={156}
-              prefix={<ShoppingCartOutlined />}
-            />
+            <Spin spinning={statsLoading}>
+              <Statistic
+                title="Sold/Available Machines"
+                value={`${dashboardStats.sold_machines}/${dashboardStats.available_machines}`}
+                prefix={<AppstoreOutlined />}
+                valueStyle={{ color: '#52c41a' }}
+              />
+            </Spin>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card>
-            <Statistic
-              title="Monthly Revenue"
-              value={15690}
-              prefix="$"
-              precision={2}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Pending Orders"
-              value={12}
-              prefix={<BellOutlined />}
-              valueStyle={{ color: '#ff4d4f' }}
-            />
+            <Spin spinning={statsLoading}>
+              <Statistic
+                title="Monthly Reports"
+                value={dashboardStats.monthly_service_reports}
+                prefix={<FileTextOutlined />}
+                valueStyle={{ color: '#722ed1' }}
+              />
+            </Spin>
           </Card>
         </Col>
       </Row>

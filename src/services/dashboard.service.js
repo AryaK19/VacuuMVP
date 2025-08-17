@@ -12,6 +12,17 @@ const prepareRequest = () => {
   }
 };
 
+export const getDashboardStatistics = async () => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/dashboard/statistics`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dashboard statistics:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
 export const getRecentActivities = async (params = {}) => {
   prepareRequest();
   try {

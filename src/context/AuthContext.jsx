@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   const getRedirectPath = (user) => {
     if (!user) return '/login';
     
-    if (user.role === 'distributer') {
+    if (user.role === 'distributor') {
       return '/distributor/dashboard';
     } else if (user.role === 'admin') {
       return '/dashboard';

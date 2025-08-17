@@ -44,7 +44,7 @@ export const getDistributors = async (params = {}) => {
     
     const queryParams = { ...defaultParams, ...params };
     
-    const response = await axios.get(`${API_URL}/users/distributers`, { params: queryParams });
+    const response = await axios.get(`${API_URL}/users/distributors`, { params: queryParams });
     return response.data;
   } catch (error) {
     console.error('Error fetching distributors:', error);

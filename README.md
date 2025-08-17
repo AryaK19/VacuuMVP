@@ -13,7 +13,7 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 0) update the database changes
-1) distributer page 
+1) distributor page 
     Add Report 
         put serial no
         put the required details ( report form)

@@ -16,9 +16,11 @@ import {
   SyncOutlined,
   EyeOutlined
 } from '@ant-design/icons';
-import { getServiceReports } from '../../../services/service_report.service';
-import ServiceReportForm from '../../../components/ServiceReportForm/ServiceReportForm';
+import { getServiceReports } from '../../services/service_report.service';
+import ServiceReportForm from '../../components/ServiceReportForm/ServiceReportForm';
 import './ServiceReports.css';
+import { getServiceReportDetail } from '../../services/dashboard.service';
+import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 
 const { Title } = Typography;
 
@@ -26,7 +28,10 @@ const ServiceReports = () => {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleDetails, setModalVisibleDetails] = useState(false);
   const [serviceReports, setServiceReports] = useState([]);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -71,6 +76,20 @@ const ServiceReports = () => {
     setPagination({...pagination, current: 1});
     fetchServiceReports(search);
   };
+
+  const handleActivityClick = async (reportId) => {
+      try {
+        setModalLoading(true);
+        setModalVisibleDetails(true);
+        const reportDetail = await getServiceReportDetail(reportId);
+        setSelectedReport(reportDetail);
+      } catch (error) {
+        message.error('Failed to load service report details');
+        setModalVisibleDetails(false);
+      } finally {
+        setModalLoading(false);
+      }
+    };
   
   const handleReset = () => {
     setSearch('');
@@ -107,6 +126,11 @@ const ServiceReports = () => {
   const handleFormSuccess = () => {
     setModalVisible(false);
     fetchServiceReports(); // Refresh the list
+  };
+
+  const handleModalClose = () => {
+    setModalVisibleDetails(false);
+    setSelectedReport(null);
   };
   
   const columns = [
@@ -151,7 +175,7 @@ const ServiceReports = () => {
             type="primary"
             size="small"
             icon={<EyeOutlined />}
-            onClick={() => console.log('View service report', record.id)}
+            onClick={() => handleActivityClick(record.id)}
           />
         </Tooltip>
       ),
@@ -218,6 +242,13 @@ const ServiceReports = () => {
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onSuccess={handleFormSuccess}
+      />
+
+      <ServiceReportDetailsModal
+        visible={modalVisibleDetails}
+        onClose={handleModalClose}
+        reportData={selectedReport}
+        loading={modalLoading}
       />
     </div>
   );

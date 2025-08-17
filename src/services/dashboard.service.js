@@ -89,3 +89,27 @@ export const downloadServiceReportPDF = async (reportId) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+export const getServiceTypeStatistics = async () => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/dashboard/service-type-statistics`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching service type statistics:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+export const getPartNumberStatistics = async () => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/dashboard/part-number-statistics`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching part number statistics:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
+
+

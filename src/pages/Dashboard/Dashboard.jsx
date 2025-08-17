@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Typography, List, Avatar, Spin, message } from 'antd';
+import { Row, Col, Card, Statistic, Typography, List, Avatar, Spin, message, Tabs } from 'antd';
 import {
   UserOutlined,
   ShoppingCartOutlined,
@@ -21,7 +21,9 @@ import { getDashboardStatistics, getRecentActivities, getServiceReportDetail } f
 import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 import './Dashboard.css';
 
+import { ServiceTypeChart, PartNumberChart } from '../../components/Charts';
 const { Title } = Typography;
+const { TabPane } = Tabs;
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -48,13 +50,13 @@ const Dashboard = () => {
     const iconStyle = { fontSize: '16px' };
     
     switch (serviceType.toLowerCase()) {
-      case 'warranty':
+      case 'health check':
         return <Avatar icon={<SafetyCertificateOutlined />} style={{ backgroundColor: '#52c41a', ...iconStyle }} />;
       case 'paid':
         return <Avatar icon={<DollarOutlined />} style={{ backgroundColor: '#1677ff', ...iconStyle }} />;
-      case 'maintenance':
+      case 'warranty':
         return <Avatar icon={<ToolOutlined />} style={{ backgroundColor: '#fa8c16', ...iconStyle }} />;
-      case 'repair':
+      case 'amc':
         return <Avatar icon={<BuildOutlined />} style={{ backgroundColor: '#f5222d', ...iconStyle }} />;
       case 'installation':
         return <Avatar icon={<SettingOutlined />} style={{ backgroundColor: '#722ed1', ...iconStyle }} />;
@@ -207,13 +209,15 @@ const Dashboard = () => {
 
       <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         <Col xs={24} lg={16}>
-          <Card title="Overview">
-            <div className="dashboard-chart-placeholder">
-              {/* In a real app, you would put a chart or graph here */}
-              <div className="placeholder-text">
-                Analytics chart will be displayed here
-              </div>
-            </div>
+           <Card title="Analytics Dashboard">
+            <Tabs defaultActiveKey="serviceTypes" className="dashboard-tabs">
+              <TabPane tab="Service Types" key="serviceTypes">
+                <ServiceTypeChart />
+              </TabPane>
+              <TabPane tab="Pump Performance" key="partNumbers">
+                <PartNumberChart />
+              </TabPane>
+            </Tabs>
           </Card>
         </Col>
         <Col xs={24} lg={8}>

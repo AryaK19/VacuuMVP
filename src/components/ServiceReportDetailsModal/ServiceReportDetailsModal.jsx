@@ -28,13 +28,13 @@ const ServiceReportDetailsModal = ({
   // Function to get service type color for tags
   const getServiceTypeColor = (serviceType) => {
     switch (serviceType?.toLowerCase()) {
-      case 'warranty':
+      case 'health check':
         return 'green';
       case 'paid':
         return 'blue';
-      case 'maintenance':
+      case 'warranty':
         return 'orange';
-      case 'repair':
+      case 'amc':
         return 'red';
       case 'installation':
         return 'purple';
@@ -42,6 +42,7 @@ const ServiceReportDetailsModal = ({
         return 'default';
     }
   };
+
 
   // Function to format date
   const formatDate = (dateString) => {

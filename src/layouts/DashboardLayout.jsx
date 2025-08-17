@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, theme, Typography, Input, Avatar, Badge, Dropdown } from 'antd';
-import { Outlet, useLocation } from 'react-router-dom';
-import { 
-  MenuUnfoldOutlined, 
+import React, { useState, useEffect } from "react";
+import {
+  Layout,
+  Menu,
+  Button,
+  theme,
+  Typography,
+  Input,
+  Avatar,
+  Badge,
+  Dropdown,
+} from "antd";
+import { Outlet, useLocation } from "react-router-dom";
+import {
+  MenuUnfoldOutlined,
   MenuFoldOutlined,
   DashboardOutlined,
   ToolOutlined,
@@ -15,12 +25,13 @@ import {
   QuestionCircleOutlined,
   DownOutlined,
   TeamOutlined,
-  ShopOutlined
-} from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../services/auth.service';
-import { useAuth } from '../context/AuthContext';
-import './DashboardLayout.css';
+  ShopOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../services/auth.service";
+import { useAuth } from "../context/AuthContext";
+import "./DashboardLayout.css";
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -31,7 +42,7 @@ const DashboardLayout = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -39,42 +50,42 @@ const DashboardLayout = () => {
   const handleLogout = () => {
     logout();
     setUser(null);
-    navigate('/login');
+    navigate("/login");
   };
 
   // Get current page title based on route
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path.includes('/dashboard')) return 'Dashboard';
-    if (path.includes('/pumps')) return 'Pumps Management';
-    if (path.includes('/parts')) return 'Parts Inventory';
-    if (path.includes('/profile')) return 'User Profile';
-    if (path.includes('/settings')) return 'System Settings';
-    if (path.includes('/admins')) return 'Admins Management';
-    if (path.includes('/distributors')) return 'Distributors Management';
-    return 'Dashboard';
+    if (path.includes("/dashboard")) return "Dashboard";
+    if (path.includes("/pumps")) return "Pumps Management";
+    if (path.includes("/parts")) return "Parts Inventory";
+    if (path.includes("/profile")) return "User Profile";
+    if (path.includes("/settings")) return "System Settings";
+    if (path.includes("/admins")) return "Admins Management";
+    if (path.includes("/distributors")) return "Distributors Management";
+    return "Dashboard";
   };
 
   const userMenuItems = [
     {
-      key: 'profile',
+      key: "profile",
       icon: <UserOutlined />,
-      label: 'Profile',
-      onClick: () => navigate('/profile'),
+      label: "Profile",
+      onClick: () => navigate("/profile"),
     },
     {
-      key: 'settings',
+      key: "settings",
       icon: <SettingOutlined />,
-      label: 'Settings',
-      onClick: () => navigate('/settings'),
+      label: "Settings",
+      onClick: () => navigate("/settings"),
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: 'Logout',
+      label: "Logout",
       onClick: handleLogout,
     },
   ];
@@ -86,18 +97,18 @@ const DashboardLayout = () => {
         setCollapsed(true);
       }
     };
-    
-    window.addEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
     handleResize();
-    
-    return () => window.removeEventListener('resize', handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <Layout className="dashboard-layout">
-      <Sider 
-        trigger={null} 
-        collapsible 
+      <Sider
+        trigger={null}
+        collapsible
         collapsed={collapsed}
         className="sidebar"
         width={200}
@@ -105,21 +116,21 @@ const DashboardLayout = () => {
       >
         <div className="logo-container">
           {collapsed ? (
-            <img 
+            <img
               src="/vacuubrand-logo-white-removebg.png"
               alt="VacuuMVP Logo"
               className="logo"
-              style={{ maxWidth: '50px' }}
+              style={{ maxWidth: "50px" }}
             />
           ) : (
-            <img 
+            <img
               src="/vacuubrand-logo-white-removebg.png"
               alt="VacuuMVP Logo"
               className="logo"
             />
           )}
         </div>
-        
+
         <div className="menu-container">
           <Menu
             theme="dark"
@@ -128,32 +139,38 @@ const DashboardLayout = () => {
             className="main-menu"
             items={[
               {
-                key: '/dashboard',
+                key: "/dashboard",
                 icon: <DashboardOutlined />,
-                label: 'Dashboard',
-                onClick: () => navigate('/dashboard'),
+                label: "Dashboard",
+                onClick: () => navigate("/dashboard"),
               },
               {
-                key: '/pumps',
+                key: "/pumps",
                 icon: <ToolOutlined />,
-                label: 'Pumps',
-                onClick: () => navigate('/pumps'),
+                label: "Pumps",
+                onClick: () => navigate("/pumps"),
               },
               {
-                key: '/parts',
+                key: "/parts",
                 icon: <AppstoreOutlined />,
-                label: 'Parts',
-                onClick: () => navigate('/parts'),
+                label: "Parts",
+                onClick: () => navigate("/parts"),
               },
               {
-                key: '/profile',
+                key: "/service-reports",
+                icon: <FileTextOutlined />,
+                label: "Service Reports",
+                onClick: () => navigate("/service-reports"),
+              },
+              {
+                key: "/profile",
                 icon: <UserOutlined />,
-                label: 'Profile',
-                onClick: () => navigate('/profile'),
+                label: "Profile",
+                onClick: () => navigate("/profile"),
               },
             ]}
           />
-          
+
           <Menu
             theme="dark"
             mode="inline"
@@ -161,40 +178,46 @@ const DashboardLayout = () => {
             className="bottom-menu"
             items={[
               {
-                type: 'divider',
-                style: { margin: '8px 16px', backgroundColor: 'rgba(255, 255, 255, 0.2)' }
+                type: "divider",
+                style: {
+                  margin: "8px 16px",
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                },
               },
               {
-                key: 'configuration',
+                key: "configuration",
                 icon: <SettingOutlined />,
-                label: 'Configuration',
+                label: "Configuration",
                 children: [
                   {
-                    key: '/admins',
+                    key: "/admins",
                     icon: <TeamOutlined />,
-                    label: 'Admins',
-                    onClick: () => navigate('/admins'),
+                    label: "Admins",
+                    onClick: () => navigate("/admins"),
                   },
                   {
-                    key: '/distributors',
+                    key: "/distributors",
                     icon: <ShopOutlined />,
-                    label: 'Distributors',
-                    onClick: () => navigate('/distributors'),
+                    label: "Distributors",
+                    onClick: () => navigate("/distributors"),
                   },
                 ],
               },
               {
-                key: 'logout',
+                key: "logout",
                 icon: <LogoutOutlined />,
-                label: 'Logout',
+                label: "Logout",
                 onClick: handleLogout,
               },
             ]}
           />
         </div>
       </Sider>
-      <Layout className={`site-layout ${collapsed ? 'collapsed' : ''}`}>
-        <Header className="site-header" style={{ background: colorBgContainer }}>
+      <Layout className={`site-layout ${collapsed ? "collapsed" : ""}`}>
+        <Header
+          className="site-header"
+          style={{ background: colorBgContainer }}
+        >
           <div className="header-left">
             <Button
               type="text"
@@ -204,41 +227,45 @@ const DashboardLayout = () => {
             />
             <div className="page-title">{getPageTitle()}</div>
           </div>
-          
+
           <div className="header-right">
             <Search
               placeholder="Search..."
               className="search-box"
               prefix={<SearchOutlined />}
-              onSearch={value => console.log('Search:', value)}
+              onSearch={(value) => console.log("Search:", value)}
             />
-            
-            <Button 
-              type="text" 
+
+            <Button
+              type="text"
               className="header-icon-button"
               icon={<QuestionCircleOutlined />}
               title="Help"
             />
-            
+
             <Badge count={5} className="notification-badge">
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 className="header-icon-button"
                 icon={<BellOutlined />}
                 title="Notifications"
               />
             </Badge>
-            
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
+
+            <Dropdown
+              menu={{ items: userMenuItems }}
+              placement="bottomRight"
+              trigger={["click"]}
+            >
               <div className="user-dropdown">
-                <Avatar 
-                  size={36} 
+                <Avatar
+                  size={36}
                   icon={<UserOutlined />}
-                  style={{ backgroundColor: '#1890ff' }}
+                  style={{ backgroundColor: "#1890ff" }}
                 />
                 <div className="user-info">
                   <Typography.Text className="user-name">
-                    {user?.email?.split('@')[0] || 'User'}
+                    {user?.email?.split("@")[0] || "User"}
                   </Typography.Text>
                   <Typography.Text className="user-role">
                     Administrator
@@ -264,4 +291,3 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
-

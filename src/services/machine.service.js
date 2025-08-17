@@ -132,3 +132,21 @@ export const deleteMachine = async (machineId) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+/**
+ * Update machine details
+ */
+export const updateMachine = async (machineId, formData) => {
+  prepareRequest();
+  try {
+    const response = await axios.put(`${API_URL}/machines/${machineId}/update`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating machine:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

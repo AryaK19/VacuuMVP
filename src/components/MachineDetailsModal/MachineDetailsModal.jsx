@@ -52,11 +52,13 @@ const { Search } = Input;
  * @param {boolean} props.visible - Controls visibility of the modal
  * @param {Function} props.onCancel - Function called when modal is cancelled
  * @param {(string|number)} props.machineId - ID of the machine to display
+ * @param {boolean} props.isPart - Whether this is a part (to hide customer/service sections)
  */
 const MachineDetailsModal = ({ 
   visible, 
   onCancel, 
   machineId,
+  isPart = false,
   ...restProps 
 }) => {
   const [activeTab, setActiveTab] = useState("details");
@@ -280,7 +282,7 @@ const MachineDetailsModal = ({
   const renderMachineDetails = () => (
     <>
       <Row gutter={[24, 24]} className="main-content">
-        <Col xs={24} lg={8}>
+        <Col xs={24} lg={isPart ? 24 : 8}>
           <div className="left-section">
             {/* Machine Image */}
             <Card 
@@ -336,99 +338,102 @@ const MachineDetailsModal = ({
           </div>
         </Col>
         
-        <Col xs={24} lg={16}>
-          <div className="right-section">
-            {/* Customer Information or Registration Button */}
-            {machine.is_sold && machine.sold_info ? (
-              <Card 
-                title={
-                  <div className="card-title">
-                    <UserOutlined className="card-title-icon" /> Customer Information
-                  </div>
-                } 
-                className="info-card customer-card" 
-                bordered={false}
-              >
-                <Row gutter={[16, 16]}>
-                  <Col xs={24} sm={12}>
-                    <div className="customer-info-item">
-                      <UserOutlined className="customer-icon" />
-                      <div>
-                        <div className="customer-label">Customer Name</div>
-                        <div className="customer-value">{machine.sold_info.customer_name}</div>
-                      </div>
+        {/* Customer Information Section - Only show for pumps/machines, not parts */}
+        {!isPart && (
+          <Col xs={24} lg={16}>
+            <div className="right-section">
+              {/* Customer Information or Registration Button */}
+              {machine.is_sold && machine.sold_info ? (
+                <Card 
+                  title={
+                    <div className="card-title">
+                      <UserOutlined className="card-title-icon" /> Customer Information
                     </div>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <div className="customer-info-item">
-                      <PhoneOutlined className="customer-icon" />
-                      <div>
-                        <div className="customer-label">Contact</div>
-                        <div className="customer-value">{machine.sold_info.customer_contact}</div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col xs={24}>
-                    <div className="customer-info-item">
-                      <MailOutlined className="customer-icon" />
-                      <div>
-                        <div className="customer-label">Email</div>
-                        <div className="customer-value">{machine.sold_info.customer_email}</div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col xs={24}>
-                    <div className="customer-info-item customer-address-item">
-                      <EnvironmentOutlined className="customer-icon" />
-                      <div className="customer-detail-wrapper">
-                        <div className="customer-label">Address</div>
-                        <div className="customer-value">{machine.sold_info.customer_address}</div>
-                      </div>
-                    </div>
-                  </Col>
-                  {machine.sold_info.user && (
-                    <Col span={24}>
+                  } 
+                  className="info-card customer-card" 
+                  bordered={false}
+                >
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
                       <div className="customer-info-item">
                         <UserOutlined className="customer-icon" />
-                        <div className="customer-detail-wrapper">
-                          <div className="customer-label">Distributor</div>
-                          <div className="customer-value">{machine.sold_info.user.name} ({machine.sold_info.user.email})</div>
+                        <div>
+                          <div className="customer-label">Customer Name</div>
+                          <div className="customer-value">{machine.sold_info.customer_name}</div>
                         </div>
                       </div>
                     </Col>
-                  )}
-                </Row>
-              </Card>
-            ) : (
-              <Card 
-                title={
-                  <div className="card-title">
-                    <UserOutlined className="card-title-icon" /> Customer Information
+                    <Col xs={24} sm={12}>
+                      <div className="customer-info-item">
+                        <PhoneOutlined className="customer-icon" />
+                        <div>
+                          <div className="customer-label">Contact</div>
+                          <div className="customer-value">{machine.sold_info.customer_contact}</div>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col xs={24}>
+                      <div className="customer-info-item">
+                        <MailOutlined className="customer-icon" />
+                        <div>
+                          <div className="customer-label">Email</div>
+                          <div className="customer-value">{machine.sold_info.customer_email}</div>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col xs={24}>
+                      <div className="customer-info-item customer-address-item">
+                        <EnvironmentOutlined className="customer-icon" />
+                        <div className="customer-detail-wrapper">
+                          <div className="customer-label">Address</div>
+                          <div className="customer-value">{machine.sold_info.customer_address}</div>
+                        </div>
+                      </div>
+                    </Col>
+                    {machine.sold_info.user && (
+                      <Col span={24}>
+                        <div className="customer-info-item">
+                          <UserOutlined className="customer-icon" />
+                          <div className="customer-detail-wrapper">
+                            <div className="customer-label">Distributor</div>
+                            <div className="customer-value">{machine.sold_info.user.name} ({machine.sold_info.user.email})</div>
+                          </div>
+                        </div>
+                      </Col>
+                    )}
+                  </Row>
+                </Card>
+              ) : (
+                <Card 
+                  title={
+                    <div className="card-title">
+                      <UserOutlined className="card-title-icon" /> Customer Information
+                    </div>
+                  } 
+                  className="info-card customer-card" 
+                  bordered={false}
+                >
+                  <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                    <UserOutlined style={{ fontSize: '48px', color: '#d9d9d9', marginBottom: '16px' }} />
+                    <div style={{ marginBottom: '16px' }}>
+                      <Text type="secondary" style={{ fontSize: '16px' }}>
+                        No customer registered for this machine
+                      </Text>
+                    </div>
+                    <Button 
+                      type="primary" 
+                      icon={<PlusOutlined />}
+                      size="large"
+                      onClick={handleRegisterCustomer}
+                    >
+                      Register Customer
+                    </Button>
                   </div>
-                } 
-                className="info-card customer-card" 
-                bordered={false}
-              >
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                  <UserOutlined style={{ fontSize: '48px', color: '#d9d9d9', marginBottom: '16px' }} />
-                  <div style={{ marginBottom: '16px' }}>
-                    <Text type="secondary" style={{ fontSize: '16px' }}>
-                      No customer registered for this machine
-                    </Text>
-                  </div>
-                  <Button 
-                    type="primary" 
-                    icon={<PlusOutlined />}
-                    size="large"
-                    onClick={handleRegisterCustomer}
-                  >
-                    Register Customer
-                  </Button>
-                </div>
-              </Card>
-            )}
-          </div>
-        </Col>
+                </Card>
+              )}
+            </div>
+          </Col>
+        )}
       </Row>
     </>
   );
@@ -484,9 +489,9 @@ const MachineDetailsModal = ({
       <ModalWrapper
         visible={visible}
         onCancel={onCancel}
-        title="Machine Details"
+        title={`${isPart ? 'Part' : 'Machine'} Details`}
         footer={null}
-        width={1200}
+        width={isPart ? 800 : 1200}
         className="machine-details-modal"
         {...restProps}
       >
@@ -498,7 +503,7 @@ const MachineDetailsModal = ({
           <div className="machine-details-content">
             {/* Top Stats Row */}
             <Row gutter={[12, 12]} className="stats-row">
-              <Col xs={12} sm={6}>
+              <Col xs={12} sm={isPart ? 8 : 6}>
                 <StatCard
                   icon={<ToolOutlined />}
                   title="Status"
@@ -506,7 +511,7 @@ const MachineDetailsModal = ({
                   color={machine.is_sold ? "#52c41a" : "#1890ff"}
                 />
               </Col>
-              <Col xs={12} sm={6}>
+              <Col xs={12} sm={isPart ? 8 : 6}>
                 <StatCard
                   icon={<IdcardOutlined />}
                   title="Model"
@@ -514,7 +519,7 @@ const MachineDetailsModal = ({
                   color="#722ed1"
                 />
               </Col>
-              <Col xs={12} sm={6}>
+              <Col xs={12} sm={isPart ? 8 : 6}>
                 <StatCard
                   icon={<DashboardOutlined />}
                   title="Type"
@@ -522,17 +527,20 @@ const MachineDetailsModal = ({
                   color="#fa8c16"
                 />
               </Col>
-              <Col xs={12} sm={6}>
-                <StatCard
-                  icon={<HistoryOutlined />}
-                  title="Service Reports"
-                  value={reportsPagination.total || 0}
-                  color="#eb2f96"
-                />
-              </Col>
+              {/* Service Reports stat - Only show for pumps/machines, not parts */}
+              {!isPart && (
+                <Col xs={12} sm={6}>
+                  <StatCard
+                    icon={<HistoryOutlined />}
+                    title="Service Reports"
+                    value={reportsPagination.total || 0}
+                    color="#eb2f96"
+                  />
+                </Col>
+              )}
             </Row>
 
-            {/* Tab navigation */}
+            {/* Tab navigation - Conditionally show tabs based on isPart */}
             <Tabs 
               activeKey={activeTab}
               onChange={handleTabChange}
@@ -542,12 +550,13 @@ const MachineDetailsModal = ({
                   key: 'details',
                   label: (
                     <span>
-                      <ToolOutlined /> Machine Details
+                      <ToolOutlined /> {isPart ? 'Part' : 'Machine'} Details
                     </span>
                   ),
                   children: renderMachineDetails()
                 },
-                {
+                // Only show service reports tab for pumps/machines, not parts
+                ...(!isPart ? [{
                   key: 'reports',
                   label: (
                     <span>
@@ -561,7 +570,7 @@ const MachineDetailsModal = ({
                     </span>
                   ),
                   children: renderServiceReports()
-                }
+                }] : [])
               ]}
             />
           </div>
@@ -575,21 +584,25 @@ const MachineDetailsModal = ({
         )}
       </ModalWrapper>
 
-      {/* Customer Registration Form */}
-      <CustomerRegistrationForm
-        visible={showCustomerRegistration}
-        machine={machine}
-        onCancel={handleCustomerRegistrationCancel}
-        onSuccess={handleCustomerRegistrationSuccess}
-      />
+      {/* Customer Registration Form - Only show for pumps/machines, not parts */}
+      {!isPart && (
+        <CustomerRegistrationForm
+          visible={showCustomerRegistration}
+          machine={machine}
+          onCancel={handleCustomerRegistrationCancel}
+          onSuccess={handleCustomerRegistrationSuccess}
+        />
+      )}
 
-      {/* Service Report Details Modal */}
-      <ServiceReportDetailsModal
-        visible={reportModalVisible}
-        onClose={handleReportModalClose}
-        reportData={selectedReportData}
-        loading={reportDetailLoading}
-      />
+      {/* Service Report Details Modal - Only show for pumps/machines, not parts */}
+      {!isPart && (
+        <ServiceReportDetailsModal
+          visible={reportModalVisible}
+          onClose={handleReportModalClose}
+          reportData={selectedReportData}
+          loading={reportDetailLoading}
+        />
+      )}
     </>
   );
 };

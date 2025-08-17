@@ -28,6 +28,7 @@ import {
 import { getPumps, deleteMachine } from "../../services/machine.service";
 import MachineCreationModal from "../../components/MachineCreationModal/MachineCreationModal";
 import MachineDetailsModal from "../../components/MachineDetailsModal/MachineDetailsModal";
+import MachineEditModal from "../../components/MachineEditModal/MachineEditModal";
 import ModalWrapper from "../../components/ModalWrapper/ModalWrapper";
 import "./Pumps.css";
 
@@ -48,6 +49,8 @@ const PumpsContent = () => {
   const [showCreationModal, setShowCreationModal] = useState(false);
   const [selectedMachineId, setSelectedMachineId] = useState(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedEditMachineId, setSelectedEditMachineId] = useState(null);
 
   useEffect(() => {
     fetchPumps();
@@ -127,6 +130,17 @@ const PumpsContent = () => {
   const handleViewMachine = (machineId) => {
     setSelectedMachineId(machineId);
     setDetailsModalVisible(true);
+  };
+
+  const handleEditMachine = (machineId) => {
+    setSelectedEditMachineId(machineId);
+    setEditModalVisible(true);
+  };
+
+  const handleEditSuccess = () => {
+    setEditModalVisible(false);
+    fetchPumps(); // Refresh the list
+    message.success("Machine updated successfully");
   };
 
   const showDeleteConfirm = (pump) => {
@@ -226,7 +240,7 @@ const PumpsContent = () => {
               type="default"
               icon={<EditOutlined />}
               size="small"
-              onClick={() => console.log("Edit part:", record)}
+              onClick={() => handleEditMachine(record.id)}
             />
           </Tooltip>
           <Tooltip title="Delete">
@@ -314,6 +328,13 @@ const PumpsContent = () => {
         visible={detailsModalVisible}
         machineId={selectedMachineId}
         onCancel={() => setDetailsModalVisible(false)}
+      />
+
+      <MachineEditModal
+        visible={editModalVisible}
+        machineId={selectedEditMachineId}
+        onCancel={() => setEditModalVisible(false)}
+        onSuccess={handleEditSuccess}
       />
     </div>
   );

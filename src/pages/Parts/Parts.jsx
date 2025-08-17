@@ -26,6 +26,8 @@ import {
 } from '@ant-design/icons';
 import { getParts, deleteMachine } from '../../services/machine.service';
 import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
+import MachineDetailsModal from '../../components/MachineDetailsModal/MachineDetailsModal';
+import MachineEditModal from '../../components/MachineEditModal/MachineEditModal';
 import ModalWrapper from '../../components/ModalWrapper/ModalWrapper';
 import './Parts.css';
 
@@ -44,6 +46,10 @@ const PartsContent = () => {
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showCreationModal, setShowCreationModal] = useState(false);
+  const [selectedMachineId, setSelectedMachineId] = useState(null);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedEditMachineId, setSelectedEditMachineId] = useState(null);
 
   useEffect(() => {
     fetchParts();
@@ -120,6 +126,22 @@ const PartsContent = () => {
     fetchParts(); // Refresh the list
   };
 
+  const handleViewMachine = (machineId) => {
+    setSelectedMachineId(machineId);
+    setDetailsModalVisible(true);
+  };
+
+  const handleEditMachine = (machineId) => {
+    setSelectedEditMachineId(machineId);
+    setEditModalVisible(true);
+  };
+
+  const handleEditSuccess = () => {
+    setEditModalVisible(false);
+    fetchParts(); // Refresh the list
+    message.success('Part updated successfully');
+  };
+
   const showDeleteConfirm = (part) => {
     modal.confirm({
       title: 'Are you sure you want to delete this part?',
@@ -183,26 +205,25 @@ const PartsContent = () => {
       ),
     },
 
-    
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
         <Space size="middle" className="action-column">
-          {/* <Tooltip title="View Details">
+          <Tooltip title="View Details">
             <Button 
               type="primary" 
               icon={<EyeOutlined />} 
               size="small"
-              onClick={() => console.log('View part details:', record)}
+              onClick={() => handleViewMachine(record.id)}
             />
-          </Tooltip> */}
+          </Tooltip>
           <Tooltip title="Edit">
             <Button 
               type="default" 
               icon={<EditOutlined />} 
               size="small"
-              onClick={() => console.log('Edit part:', record)}
+              onClick={() => handleEditMachine(record.id)}
             />
           </Tooltip>
           <Tooltip title="Delete">
@@ -284,6 +305,20 @@ const PartsContent = () => {
         onSuccess={handleCreationSuccess}
         type="part"
         title="Create New Part"
+      />
+
+      <MachineDetailsModal
+        visible={detailsModalVisible}
+        machineId={selectedMachineId}
+        onCancel={() => setDetailsModalVisible(false)}
+        isPart={true}
+      />
+
+      <MachineEditModal
+        visible={editModalVisible}
+        machineId={selectedEditMachineId}
+        onCancel={() => setEditModalVisible(false)}
+        onSuccess={handleEditSuccess}
       />
     </div>
   );

@@ -1,0 +1,104 @@
+.machine-edit-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  background: #f9fbfd;
+  border-radius: 8px 8px 0 0;
+}
+
+.machine-edit-modal .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.machine-edit-modal .ant-modal-body {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1890ff;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.section-icon {
+  font-size: 18px;
+}
+
+.machine-edit-modal .ant-form-item-label > label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.machine-edit-modal .ant-input-affix-wrapper,
+.machine-edit-modal .ant-picker,
+.machine-edit-modal .ant-input {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s;
+}
+
+.machine-edit-modal .ant-input-affix-wrapper:focus,
+.machine-edit-modal .ant-input-affix-wrapper-focused,
+.machine-edit-modal .ant-picker:focus,
+.machine-edit-modal .ant-picker-focused,
+.machine-edit-modal .ant-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.machine-edit-modal .ant-btn-primary {
+  background: #1890ff;
+  border-color: #1890ff;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.machine-edit-modal .ant-btn-primary:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.machine-edit-modal .ant-upload-list-picture .ant-upload-list-item {
+  border-radius: 6px;
+}
+
+.machine-edit-modal .ant-divider {
+  margin: 24px 0;
+  border-color: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .machine-edit-modal {
+    width: 95% !important;
+    margin: 10px;
+  }
+  
+  .machine-edit-modal .ant-modal-body {
+    padding: 16px;
+  }
+  
+  .section-title {
+    font-size: 14px;
+  }
+}

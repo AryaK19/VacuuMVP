@@ -17,7 +17,7 @@ import Settings from './pages/Settings/Settings';
 import Admins from './pages/Admins/Admins';
 import Distributors from './pages/Distributors/Distributors';
 import DistributorDashboard from './pages/Distributor/Dashboard';
-import ServiceReports from './pages/Distributor/ServiceReports/ServiceReports';
+import ServiceReports from './pages/ServiceReports/ServiceReports';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
@@ -87,6 +87,7 @@ const AppContent = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="pumps" element={<Pumps />} />
           <Route path="parts" element={<Parts />} />
+          <Route path="service-reports" element={<ServiceReports />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="admins" element={<Admins />} />

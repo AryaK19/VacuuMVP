@@ -16,8 +16,8 @@ import {
   SyncOutlined,
   EyeOutlined
 } from '@ant-design/icons';
-import { getServiceReports } from '../../../services/service_report.service';
-import ServiceReportForm from '../../../components/ServiceReportForm/ServiceReportForm';
+import { getServiceReports } from '../../services/service_report.service';
+import ServiceReportForm from '../../components/ServiceReportForm/ServiceReportForm';
 import './ServiceReports.css';
 
 const { Title } = Typography;

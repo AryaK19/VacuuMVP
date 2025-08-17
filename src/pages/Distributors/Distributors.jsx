@@ -311,7 +311,7 @@ const DistributorsContent = () => {
         visible={showRegistrationModal}
         onCancel={() => setShowRegistrationModal(false)}
         onSuccess={handleRegistrationSuccess}
-        role="distributer"
+        role="distributor"
         title="Register New Distributor"
       />
     </div>

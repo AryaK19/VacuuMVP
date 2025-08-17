@@ -95,7 +95,7 @@ const AppContent = () => {
         
         {/* Distributor routes */}
         <Route path="/distributor" element={
-          <ProtectedRoute requiredRole="distributer">
+          <ProtectedRoute requiredRole="distributor">
             <DistributorLayout />
           </ProtectedRoute>
         }>

@@ -10,7 +10,7 @@ import ModalWrapper from '../ModalWrapper/ModalWrapper';
  * @param {boolean} props.visible - Controls visibility of the modal
  * @param {Function} props.onCancel - Function called when modal is cancelled
  * @param {Function} props.onSuccess - Function called when registration is successful
- * @param {string} props.role - User role (admin, distributer, etc.)
+ * @param {string} props.role - User role (admin, distributor, etc.)
  * @param {string} [props.title] - Modal title
  */
 const UserRegistrationModal = ({ 

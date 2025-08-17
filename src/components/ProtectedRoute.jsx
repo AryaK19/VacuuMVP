@@ -29,7 +29,7 @@ const ProtectedRoute = ({ children, requiredRole, redirectPath = '/login' }) => 
       return <Navigate to="/dashboard" replace />;
     }
     // Redirect distributor to distributor dashboard
-    if (user.role === 'distributer') {
+    if (user.role === 'distributor') {
       return <Navigate to="/distributor/dashboard" replace />;
     }
     // Default fallback - shouldn't normally reach here

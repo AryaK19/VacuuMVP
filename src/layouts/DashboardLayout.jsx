@@ -15,8 +15,7 @@ import {
   QuestionCircleOutlined,
   DownOutlined,
   TeamOutlined,
-  ShopOutlined,
-  FileTextOutlined 
+  ShopOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth.service';
@@ -145,12 +144,6 @@ const DashboardLayout = () => {
                 icon: <AppstoreOutlined />,
                 label: 'Parts',
                 onClick: () => navigate('/parts'),
-              },
-              {
-                key: '/service-reports',
-                icon: <FileTextOutlined />,
-                label: 'Service Reports',
-                onClick: () => navigate('/service-reports'),
               },
               {
                 key: '/profile',

@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  Card, 
-  Input, 
-  Button, 
-  Space, 
-  Typography, 
-  Spin, 
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Card,
+  Input,
+  Button,
+  Space,
+  Typography,
+  Spin,
   Tooltip,
   Tag,
   message,
-  App
-} from 'antd';
-import { 
-  SearchOutlined, 
-  SyncOutlined, 
+  App,
+} from "antd";
+import {
+  SearchOutlined,
+  SyncOutlined,
   EyeOutlined,
   BarcodeOutlined,
   TagOutlined,
@@ -22,13 +22,14 @@ import {
   UserOutlined,
   DeleteOutlined,
   PlusOutlined,
-  ExclamationCircleOutlined
-} from '@ant-design/icons';
-import { getPumps, deleteMachine } from '../../services/machine.service';
-import MachineCreationModal from '../../components/MachineCreationModal/MachineCreationModal';
-import MachineDetailsModal from '../../components/MachineDetailsModal/MachineDetailsModal';
-import ModalWrapper from '../../components/ModalWrapper/ModalWrapper';
-import './Pumps.css';
+  EditOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import { getPumps, deleteMachine } from "../../services/machine.service";
+import MachineCreationModal from "../../components/MachineCreationModal/MachineCreationModal";
+import MachineDetailsModal from "../../components/MachineDetailsModal/MachineDetailsModal";
+import ModalWrapper from "../../components/ModalWrapper/ModalWrapper";
+import "./Pumps.css";
 
 const { Title } = Typography;
 
@@ -39,11 +40,11 @@ const PumpsContent = () => {
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
-    total: 0
+    total: 0,
   });
-  const [search, setSearch] = useState('');
-  const [sortField, setSortField] = useState('created_at');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [showCreationModal, setShowCreationModal] = useState(false);
   const [selectedMachineId, setSelectedMachineId] = useState(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -59,23 +60,23 @@ const PumpsContent = () => {
         page: pagination.current,
         limit: pagination.pageSize,
         sort_by: sortField,
-        sort_order: sortOrder
+        sort_order: sortOrder,
       };
-      
+
       if (searchValue) {
         params.search = searchValue;
       }
-      
+
       const response = await getPumps(params);
-      
+
       setPumps(response.items || []);
       setPagination({
         ...pagination,
-        total: response.total || 0
+        total: response.total || 0,
       });
     } catch (error) {
-      message.error('Failed to fetch pumps. Please try again later.');
-      console.error('Error fetching pumps:', error);
+      message.error("Failed to fetch pumps. Please try again later.");
+      console.error("Error fetching pumps:", error);
     } finally {
       setLoading(false);
     }
@@ -85,33 +86,33 @@ const PumpsContent = () => {
     const newPagination = {
       ...pagination,
       current: pag.current,
-      pageSize: pag.pageSize
+      pageSize: pag.pageSize,
     };
-    
+
     let newSortField = sortField;
     let newSortOrder = sortOrder;
-    
+
     if (sorter.field && sorter.order) {
       newSortField = sorter.field;
-      newSortOrder = sorter.order === 'ascend' ? 'asc' : 'desc';
+      newSortOrder = sorter.order === "ascend" ? "asc" : "desc";
     }
-    
+
     setPagination(newPagination);
     setSortField(newSortField);
     setSortOrder(newSortOrder);
   };
 
   const handleSearch = () => {
-    setPagination({...pagination, current: 1});
+    setPagination({ ...pagination, current: 1 });
     fetchPumps(search);
   };
 
   const handleRefresh = () => {
-    setPagination({...pagination, current: 1});
-    setSearch('');
-    setSortField('created_at');
-    setSortOrder('desc');
-    fetchPumps('');
+    setPagination({ ...pagination, current: 1 });
+    setSearch("");
+    setSortField("created_at");
+    setSortOrder("desc");
+    fetchPumps("");
   };
 
   const handleAddPump = () => {
@@ -130,18 +131,24 @@ const PumpsContent = () => {
 
   const showDeleteConfirm = (pump) => {
     modal.confirm({
-      title: 'Are you sure you want to delete this pump?',
+      title: "Are you sure you want to delete this pump?",
       icon: <ExclamationCircleOutlined />,
       content: (
         <div>
-          <p>This action will permanently delete the pump with serial number: <strong>{pump.serial_no}</strong></p>
-          <p>All associated service reports, parts, and files will also be deleted.</p>
+          <p>
+            This action will permanently delete the pump with serial number:{" "}
+            <strong>{pump.serial_no}</strong>
+          </p>
+          <p>
+            All associated service reports, parts, and files will also be
+            deleted.
+          </p>
           <p>This action cannot be undone.</p>
         </div>
       ),
-      okText: 'Yes, Delete',
-      okType: 'danger',
-      cancelText: 'No, Cancel',
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "No, Cancel",
       onOk() {
         return handleDeletePump(pump.id);
       },
@@ -151,10 +158,10 @@ const PumpsContent = () => {
   const handleDeletePump = async (pumpId) => {
     try {
       await deleteMachine(pumpId);
-      message.success('Pump deleted successfully');
+      message.success("Pump deleted successfully");
       fetchPumps(); // Refresh the list
     } catch (error) {
-      message.error(error.message || 'Failed to delete pump');
+      message.error(error.message || "Failed to delete pump");
     }
   };
 
@@ -165,9 +172,9 @@ const PumpsContent = () => {
           <BarcodeOutlined className="header-icon" /> Serial No
         </span>
       ),
-      dataIndex: 'serial_no',
-      key: 'serial_no',
-      sorter: true
+      dataIndex: "serial_no",
+      key: "serial_no",
+      sorter: true,
     },
     {
       title: () => (
@@ -175,9 +182,9 @@ const PumpsContent = () => {
           <TagOutlined className="header-icon" /> Model No
         </span>
       ),
-      dataIndex: 'model_no',
-      key: 'model_no',
-      sorter: true
+      dataIndex: "model_no",
+      key: "model_no",
+      sorter: true,
     },
     {
       title: () => (
@@ -185,9 +192,9 @@ const PumpsContent = () => {
           <NumberOutlined className="header-icon" /> Part No
         </span>
       ),
-      dataIndex: 'part_no',
-      key: 'part_no',
-      sorter: true
+      dataIndex: "part_no",
+      key: "part_no",
+      sorter: true,
     },
     {
       title: () => (
@@ -195,30 +202,38 @@ const PumpsContent = () => {
           <UserOutlined className="header-icon" /> Customer Name
         </span>
       ),
-      key: 'customer',
+      key: "customer",
       sorter: true,
       render: (record) => {
-        return record.sold_info ? record.sold_info.customer_name : 'Not Sold';
-      }
+        return record.sold_info ? record.sold_info.customer_name : "Not Sold";
+      },
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (_, record) => (
         <Space size="middle" className="action-column">
           <Tooltip title="View Details">
-            <Button 
-              type="primary" 
-              icon={<EyeOutlined />} 
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
               size="small"
               onClick={() => handleViewMachine(record.id)}
             />
           </Tooltip>
+          <Tooltip title="Edit">
+            <Button
+              type="default"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => console.log("Edit part:", record)}
+            />
+          </Tooltip>
           <Tooltip title="Delete">
-            <Button 
-              type="default" 
+            <Button
+              type="default"
               danger
-              icon={<DeleteOutlined />} 
+              icon={<DeleteOutlined />}
               size="small"
               onClick={() => showDeleteConfirm(record)}
             />
@@ -232,7 +247,13 @@ const PumpsContent = () => {
     <div className="pumps-page">
       <Card>
         <div className="pumps-filter">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Space size="large">
               <Input
                 placeholder="Search pumps"
@@ -242,22 +263,16 @@ const PumpsContent = () => {
                 prefix={<SearchOutlined />}
                 style={{ width: 200 }}
               />
-              <Button 
-                type="primary" 
-                onClick={handleSearch}
-              >
+              <Button type="primary" onClick={handleSearch}>
                 Search
               </Button>
-              <Button
-                icon={<SyncOutlined />}
-                onClick={handleRefresh}
-              >
+              <Button icon={<SyncOutlined />} onClick={handleRefresh}>
                 Reset
               </Button>
             </Space>
-            
-            <Button 
-              type="primary" 
+
+            <Button
+              type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddPump}
             >
@@ -265,7 +280,7 @@ const PumpsContent = () => {
             </Button>
           </div>
         </div>
-        
+
         <div className="pumps-table">
           <Spin spinning={loading}>
             <Table
@@ -277,16 +292,16 @@ const PumpsContent = () => {
                 pageSize: pagination.pageSize,
                 total: pagination.total,
                 showSizeChanger: true,
-                showTotal: (total) => `Total ${total} pumps`
+                showTotal: (total) => `Total ${total} pumps`,
               }}
               onChange={handleTableChange}
-              scroll={{ x: 'max-content' }}
+              scroll={{ x: "max-content" }}
               className="custom-table"
             />
           </Spin>
         </div>
       </Card>
-      
+
       <MachineCreationModal
         visible={showCreationModal}
         onCancel={() => setShowCreationModal(false)}
@@ -294,7 +309,7 @@ const PumpsContent = () => {
         type="pump"
         title="Create New Pump"
       />
-      
+
       <MachineDetailsModal
         visible={detailsModalVisible}
         machineId={selectedMachineId}
@@ -312,4 +327,3 @@ const Pumps = () => (
 );
 
 export default Pumps;
-

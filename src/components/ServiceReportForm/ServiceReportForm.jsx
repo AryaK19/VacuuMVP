@@ -15,7 +15,8 @@ import {
   Space,
   message,
   Alert,
-  Typography
+  Typography,
+  Spin
 } from 'antd';
 import {
   SearchOutlined,
@@ -34,6 +35,8 @@ import {
   getServiceTypes,
   createServiceReport
 } from '../../services/service_report.service';
+import { getParts } from '../../services/machine.service';
+import CustomerRegistrationForm from '../CustomerRegistrationForm/CustomerRegistrationForm';
 import './ServiceReportForm.css';
 
 const { Step } = Steps;
@@ -50,6 +53,9 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [serialNo, setSerialNo] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [availableParts, setAvailableParts] = useState([]);
+  const [partsSearchLoading, setPartsSearchLoading] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -77,8 +83,16 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
       const response = await getMachineBySerial(serialNo);
       if (response.success && response.machine) {
         setMachine(response.machine);
-        setCurrentStep(1);
-        message.success('Machine found successfully!');
+        
+        // Check if customer information exists
+        if (!response.machine.customer_name || !response.machine.is_sold) {
+          // Show customer registration form
+          setShowCustomerForm(true);
+        } else {
+          // Proceed to next step
+          setCurrentStep(1);
+          message.success('Machine found successfully!');
+        }
       } else {
         message.error('Machine not found');
         setMachine(null);
@@ -91,9 +105,37 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
     }
   };
 
+  const handleCustomerRegistrationSuccess = (soldMachine) => {
+    // Update machine with customer information
+    const updatedMachine = {
+      ...machine,
+      customer_name: soldMachine.customer_name,
+      customer_contact: soldMachine.customer_contact,
+      customer_email: soldMachine.customer_email,
+      customer_address: soldMachine.customer_address,
+      is_sold: true
+    };
+    
+    setMachine(updatedMachine);
+    setShowCustomerForm(false);
+    setCurrentStep(1);
+    message.success('Customer registered successfully! You can now proceed with the service report.');
+  };
+
+  const handleCustomerRegistrationCancel = () => {
+    setShowCustomerForm(false);
+    setMachine(null);
+    setSerialNo('');
+  };
+
   const handleNext = async () => {
     try {
-      if (currentStep === 1) {
+      if (currentStep === 0) {
+        if (!machine) {
+          message.error('Please search and select a machine first');
+          return;
+        }
+      } else if (currentStep === 1) {
         // Validate service details
         await form.validateFields(['service_type_id', 'service_person_name']);
       } else if (currentStep === 2) {
@@ -103,6 +145,7 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
       setCurrentStep(currentStep + 1);
     } catch (error) {
       console.log('Validation failed:', error);
+      message.error('Please complete all required fields before proceeding');
     }
   };
 
@@ -112,27 +155,63 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
 
   const handleSubmit = async (values) => {
     setLoading(true);
+    
     try {
+      // Validate all fields before proceeding
+      await form.validateFields();
+      
+      // Get validated form values
+      const formValues = form.getFieldsValue(true);
+      
       const formData = new FormData();
       
-      // Add machine serial number
-      formData.append('machine_serial_no', serialNo);
+    
+
+      formData.append('machine_id', machine.machine_id);
+      // Add form values - ensure they're properly collected
+      if (formValues.service_type_id) {
+        formData.append('service_type_id', formValues.service_type_id);
+      } else {
+        throw new Error('Service type is required');
+      }
       
-      // Add form values
-      formData.append('service_type_id', values.service_type_id);
-      formData.append('service_person_name', values.service_person_name);
-      formData.append('problem', values.problem);
-      formData.append('solution', values.solution);
+      if (formValues.service_person_name) {
+        formData.append('service_person_name', formValues.service_person_name);
+      } else {
+        throw new Error('Service person name is required');
+      }
       
-      // Add parts if any
-      if (values.parts && values.parts.length > 0) {
-        formData.append('parts', JSON.stringify(values.parts));
+      if (formValues.problem) {
+        formData.append('problem', formValues.problem);
+      } else {
+        throw new Error('Problem description is required');
+      }
+      
+      if (formValues.solution) {
+        formData.append('solution', formValues.solution);
+      } else {
+        throw new Error('Solution description is required');
+      }
+      
+      // Add parts if any - REMOVE notes field
+      if (formValues.parts && formValues.parts.length > 0) {
+        const validParts = formValues.parts.filter(part => part && part.part_id);
+        
+        if (validParts.length > 0) {
+          const partsData = validParts.map(part => ({
+            machine_id: part.part_id,
+            quantity: parseInt(part.quantity, 10) || 1
+          }));
+          formData.append('parts', JSON.stringify(partsData));
+        }
       }
       
       // Add files if any
       fileList.forEach(file => {
         formData.append('files', file.originFileObj);
       });
+      
+
       
       const response = await createServiceReport(formData);
       
@@ -182,6 +261,40 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
     return false; // Prevent automatic upload
   };
 
+  const searchParts = async (searchValue) => {
+    if (!searchValue || searchValue.length < 2) {
+      setAvailableParts([]);
+      return;
+    }
+
+    setPartsSearchLoading(true);
+    try {
+      const response = await getParts({
+        search: searchValue,
+        limit: 20 // Limit results for dropdown
+      });
+      setAvailableParts(response.items || []);
+    } catch (error) {
+      console.error('Error searching parts:', error);
+      setAvailableParts([]);
+    } finally {
+      setPartsSearchLoading(false);
+    }
+  };
+
+  // Debounce search function
+  const debounceSearch = React.useCallback(
+    debounce((searchValue) => searchParts(searchValue), 300),
+    []
+  );
+
+  const handlePartSearch = (searchValue) => {
+    debounceSearch(searchValue);
+  };
+
+  // Add this function to render the selected part
+
+
   const steps = [
     {
       title: 'Find Machine',
@@ -213,7 +326,7 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
             </Button>
           </Space.Compact>
           
-          {machine && (
+          {machine && machine.customer_name && (
             <Card style={{ marginTop: 24 }} title="Machine Information">
               <Descriptions column={2} bordered size="small">
                 <Descriptions.Item label="Serial Number">{machine.serial_no}</Descriptions.Item>
@@ -544,48 +657,78 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
           
           <Form.List name="parts">
             {(fields, { add, remove }) => (
-              <>
+              <div className="parts-container">
                 {fields.map(({ key, name, ...restField }) => (
-                  <Row key={key} gutter={16} style={{ marginBottom: 16 }}>
-                    <Col span={14}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'part_name']}
-                        rules={[{ required: true, message: 'Part name is required' }]}
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Input placeholder="Part Name/Number" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'quantity']}
-                        rules={[{ required: true, message: 'Quantity is required' }]}
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Input type="number" min={1} placeholder="Quantity" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={4}>
-                      <MinusCircleOutlined 
-                        onClick={() => remove(name)} 
-                        style={{ marginTop: 8, fontSize: 18, color: '#ff4d4f' }}
-                      />
-                    </Col>
-                  </Row>
+                  <div key={key} className="part-form-item">
+                    <Row gutter={16} align="middle">
+                      <Col span={16}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'part_id']}
+                          rules={[{ required: true, message: 'Please select a part' }]}
+                          style={{ marginBottom: 0 }}
+                          label="Part"
+                        >
+                          <Select
+                            showSearch
+                            placeholder="Search and select part"
+                            filterOption={false}
+                            onSearch={handlePartSearch}
+                            loading={partsSearchLoading}
+                            notFoundContent={partsSearchLoading ? <Spin size="small" /> : 'No parts found'}
+                            style={{ width: '100%' }}
+                            optionLabelProp="label"
+                            optionFilterProp="label"
+                            className="part-select"
+                          >
+                            {availableParts.map(part => (
+                              <Option 
+                                key={part.id} 
+                                value={part.id}
+                                label={`${part.serial_no} - ${part.model_no}`}
+                              >
+                                <div className="part-option">
+                                  <div className="part-option-title">{part.serial_no} - {part.model_no}</div>
+                                  <div className="part-option-subtitle">Part No: {part.part_no}</div>
+                                </div>
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={6}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'quantity']}
+                          rules={[{ required: true, message: 'Quantity is required' }]}
+                          style={{ marginBottom: 0 }}
+                          label="Qty"
+                        >
+                          <Input type="number" min={1} placeholder="Quantity" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Button 
+                          type="text" 
+                          danger
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => remove(name)} 
+                        />
+                      </Col>
+                    </Row>
+                  </div>
                 ))}
                 <Form.Item>
                   <Button 
                     type="dashed" 
-                    onClick={() => add()} 
+                    onClick={() => add({ part_id: undefined, quantity: 1 })} 
                     block 
                     icon={<PlusOutlined />}
                   >
                     Add Part
                   </Button>
                 </Form.Item>
-              </>
+              </div>
             )}
           </Form.List>
           
@@ -614,60 +757,91 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
   ];
 
   return (
-    <Modal
-      title={<span><FileTextOutlined /> Create Service Report</span>}
-      open={visible}
-      onCancel={handleModalClose}
-      footer={null}
-      width={900}
-      maskClosable={false}
-      className="service-report-modal"
-    >
-      <Steps current={currentStep} style={{ marginBottom: 32 }}>
-        {steps.map(item => (
-          <Step key={item.title} title={item.title} />
-        ))}
-      </Steps>
-
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        initialValues={{ parts: [{ part_name: '', quantity: 1 }] }}
+    <>
+      <Modal
+        title={<span><FileTextOutlined /> Create Service Report</span>}
+        open={visible}
+        onCancel={handleModalClose}
+        footer={null}
+        width={900}
+        maskClosable={false}
+        className="service-report-modal"
       >
-        <div className="steps-content">
-          {steps[currentStep].content}
-        </div>
+        <Steps current={currentStep} style={{ marginBottom: 32 }}>
+          {steps.map(item => (
+            <Step key={item.title} title={item.title} />
+          ))}
+        </Steps>
 
-        <div className="steps-action" style={{ marginTop: 32 }}>
-          {currentStep > 0 && (
-            <Button style={{ margin: '0 8px' }} onClick={handlePrev}>
-              Previous
-            </Button>
-          )}
-          {currentStep < steps.length - 1 && (
-            <Button 
-              type="primary" 
-              onClick={handleNext}
-              disabled={currentStep === 0 && !machine}
-            >
-              Next
-            </Button>
-          )}
-          {currentStep === steps.length - 1 && (
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading}
-              icon={<CheckCircleOutlined />}
-            >
-              Submit Report
-            </Button>
-          )}
-        </div>
-      </Form>
-    </Modal>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={{ 
+            parts: [{ part_id: undefined, quantity: 1 }],
+            service_type_id: undefined,
+            service_person_name: '',
+            problem: '',
+            solution: ''
+          }}
+          validateMessages={{
+            required: '${label} is required'
+          }}
+        >
+          <div className="steps-content">
+            {steps[currentStep].content}
+          </div>
+
+          <div className="steps-action" style={{ marginTop: 32 }}>
+            {currentStep > 0 && (
+              <Button style={{ margin: '0 8px' }} onClick={handlePrev}>
+                Previous
+              </Button>
+            )}
+            {currentStep < steps.length - 1 && (
+              <Button 
+                type="primary" 
+                onClick={handleNext}
+                disabled={currentStep === 0 && !machine}
+              >
+                Next
+              </Button>
+            )}
+            {currentStep === steps.length - 1 && (
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={loading}
+                icon={<CheckCircleOutlined />}
+              >
+                Submit Report
+              </Button>
+            )}
+          </div>
+        </Form>
+      </Modal>
+      
+      <CustomerRegistrationForm
+        visible={showCustomerForm}
+        machine={machine}
+        onCancel={handleCustomerRegistrationCancel}
+        onSuccess={handleCustomerRegistrationSuccess}
+      />
+    </>
   );
 };
+
+// Debounce utility function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 export default ServiceReportForm;

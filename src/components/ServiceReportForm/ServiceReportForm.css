@@ -96,6 +96,80 @@
   color: rgba(0, 0, 0, 0.85);
 }
 
+/* Parts selection styling */
+.parts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.part-form-item {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.part-select {
+  margin-bottom: 8px;
+}
+
+.part-option {
+  padding: 4px 0;
+}
+
+.part-option-title {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 1.4;
+}
+
+.part-option-subtitle {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.selected-part {
+  display: block;
+  padding: 2px 0;
+}
+
+.selected-part-title {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.selected-part-subtitle {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Search field padding */
+.ant-select-selector {
+  margin-bottom: 8px;
+}
+
+/* Override Select styles for better display of selected part */
+.ant-select-selection-item {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0;
+}
+
+/* Make dropdown items display properly */
+.ant-select-dropdown .ant-select-item-option-content {
+  white-space: normal;
+  padding: 8px 0;
+}
+
+.ant-select-dropdown .ant-select-item {
+  padding: 8px 12px;
+}
+
 @media (max-width: 768px) {
   .service-report-modal {
     width: 95% !important;

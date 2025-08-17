@@ -89,3 +89,21 @@ export const getMachineBySerial = async (serialNo) => {
   }
 };
 
+/**
+ * Create customer record for a machine
+ */
+export const createCustomerRecord = async (customerData) => {
+  prepareRequest();
+  try {
+    const response = await axios.post(`${API_URL}/service-reports/customer`, customerData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating customer record:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+

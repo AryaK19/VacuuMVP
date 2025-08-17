@@ -96,7 +96,7 @@ const Login = () => {
       <div className="form-panel">
         <div className="form-container">
           <div className="logo-container">
-            <img src="/public/vacuubrand-logo-removebg.png" alt="VacuuBrand Logo" className="brand-logo" />
+            <img src="/vacuubrand-logo-removebg.png" alt="VacuuBrand Logo" className="brand-logo" />
           </div>
           
           <Title level={2} className="form-title">Sign in to your account</Title>

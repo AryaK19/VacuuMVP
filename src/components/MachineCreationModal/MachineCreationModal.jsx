@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Upload, Button, Row, Col, Alert, message } from 'antd';
 import { UploadOutlined, NumberOutlined, TagOutlined } from '@ant-design/icons';
 import ModalWrapper from '../ModalWrapper/ModalWrapper';
-import { createPump, createPart } from '../../services/machine.service';
+import { createPump, createPart, getModelFromPart } from '../../services/machine.service';
 
 /**
  * A modal for creating new machines (pumps or parts)
@@ -25,6 +25,8 @@ const MachineCreationModal = ({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [modelLoading, setModelLoading] = useState(false);
+  const [modelAutoFilled, setModelAutoFilled] = useState(false);
   
   // Reset form and errors when modal opens/closes
   React.useEffect(() => {
@@ -85,6 +87,26 @@ const MachineCreationModal = ({
     return e?.fileList;
   };
 
+  // Handler for part_no blur/change to fetch model_no
+  const handlePartNoBlur = async () => {
+    const partNo = form.getFieldValue('part_no');
+    if (!partNo) return;
+    setModelLoading(true);
+    setModelAutoFilled(false);
+    try {
+      const resp = await getModelFromPart(partNo);
+      if (resp && resp.model_no) {
+        form.setFieldsValue({ model_no: resp.model_no });
+        setModelAutoFilled(true);
+      } else {
+        setModelAutoFilled(false);
+        // Do not overwrite model_no, allow manual entry
+      }
+    } finally {
+      setModelLoading(false);
+    }
+  };
+
   return (
     <ModalWrapper
       visible={visible}
@@ -128,7 +150,13 @@ const MachineCreationModal = ({
               label="Part Number"
               rules={[{ required: true, message: 'Please enter part number' }]}
             >
-              <Input prefix={<NumberOutlined />} placeholder="Part Number" />
+              <Input
+                prefix={<NumberOutlined />}
+                placeholder="Part Number"
+                onBlur={handlePartNoBlur}
+                onPressEnter={handlePartNoBlur}
+                autoComplete="off"
+              />
             </Form.Item>
           </Col>
           
@@ -138,7 +166,14 @@ const MachineCreationModal = ({
               label="Model Number"
               rules={[{ required: true, message: 'Please enter model number' }]}
             >
-              <Input prefix={<TagOutlined />} placeholder="Model Number" />
+              <Input
+                prefix={<TagOutlined />}
+                placeholder="Model Number"
+                disabled={modelLoading}
+                autoComplete="off"
+                // If autofilled, show a hint
+                suffix={modelLoading ? <span style={{ color: '#1890ff' }}>Loading...</span> : (modelAutoFilled ? <span style={{ color: '#52c41a' }}>Auto-filled</span> : null)}
+              />
             </Form.Item>
           </Col>
         </Row>

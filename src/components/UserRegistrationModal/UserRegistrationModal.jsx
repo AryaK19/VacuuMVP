@@ -1,31 +1,22 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Row, Col, Alert, message } from 'antd';
+import { Form, Input, Button, Row, Col, Alert, message, Divider } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import ModalWrapper from '../ModalWrapper/ModalWrapper';
+import { register } from '../../services/auth.service';
+import './UserRegistrationModal.css';
 
-/**
- * A modal for registering new users
- * 
- * @param {Object} props - Component props
- * @param {boolean} props.visible - Controls visibility of the modal
- * @param {Function} props.onCancel - Function called when modal is cancelled
- * @param {Function} props.onSuccess - Function called when registration is successful
- * @param {string} props.role - User role (admin, distributor, etc.)
- * @param {string} [props.title] - Modal title
- */
-const UserRegistrationModal = ({ 
-  visible, 
-  onCancel, 
-  onSuccess, 
-  role, 
+const UserRegistrationModal = ({
+  visible,
+  onCancel,
+  onSuccess,
+  role,
   title,
-  ...restProps 
+  ...restProps
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  // Reset form and errors when modal opens/closes
+
   React.useEffect(() => {
     if (visible) {
       form.resetFields();
@@ -36,14 +27,14 @@ const UserRegistrationModal = ({
   const handleSubmit = async (values) => {
     setLoading(true);
     setError('');
-    
     try {
-      // Your registration logic here
-      
+      const payload = { ...values, role };
+      await register(payload);
+
       message.success(`${role.charAt(0).toUpperCase() + role.slice(1)} registered successfully!`);
       onSuccess();
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.detail || err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -51,11 +42,12 @@ const UserRegistrationModal = ({
 
   return (
     <ModalWrapper
+      className="user-registration-modal"
       visible={visible}
       onCancel={onCancel}
       title={title || `Register New User`}
       footer={null}
-      width={800}
+      width={600}
       {...restProps}
     >
       {error && (
@@ -64,78 +56,106 @@ const UserRegistrationModal = ({
           description={error}
           type="error"
           showIcon
+          className="registration-error-alert"
           style={{ marginBottom: 16 }}
         />
       )}
-      
-      <Form
-        form={form}
-        name="registration"
-        layout="vertical"
-        onFinish={handleSubmit}
-      >
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please enter name' }]}
-            >
-              <Input prefix={<UserOutlined />} placeholder="Full Name" />
-            </Form.Item>
-          </Col>
-          
-          <Col span={12}>
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[
-                { required: true, message: 'Please enter email' },
-                { type: 'email', message: 'Please enter a valid email' }
-              ]}
-            >
-              <Input prefix={<MailOutlined />} placeholder="Email" />
-            </Form.Item>
-          </Col>
-        </Row>
-        
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="phone_number"
-              label="Phone Number"
-              rules={[{ required: true, message: 'Please enter phone number' }]}
-            >
-              <Input prefix={<PhoneOutlined />} placeholder="Phone Number" />
-            </Form.Item>
-          </Col>
-          
-          <Col span={12}>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                { required: true, message: 'Please enter password' },
-                { min: 6, message: 'Password must be at least 6 characters' }
-              ]}
-            >
-              <Input.Password prefix={<LockOutlined />} placeholder="Password" />
-            </Form.Item>
-          </Col>
-        </Row>
-        
-        <div style={{ textAlign: 'right', marginTop: 24 }}>
-          <Button onClick={onCancel} style={{ marginRight: 8 }}>
-            Cancel
-          </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Register
-          </Button>
-        </div>
-      </Form>
+
+      <div>
+        <Form
+          form={form}
+          name="registration"
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="user-registration-form"
+        >
+          <Row gutter={24}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="name"
+                label="Name"
+                rules={[{ required: true, message: 'Please enter name' }]}
+              >
+                <Input prefix={<UserOutlined />} placeholder="Full Name" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { required: true, message: 'Please enter email' },
+                  { type: 'email', message: 'Please enter a valid email' }
+                ]}
+              >
+                <Input prefix={<MailOutlined />} placeholder="Email" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={24}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="phone_number"
+                label="Phone Number"
+                rules={[{ required: true, message: 'Please enter phone number' }]}
+              >
+                <Input prefix={<PhoneOutlined />} placeholder="Phone Number" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={24}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="password"
+                label="Password"
+                rules={[
+                  { required: true, message: 'Please enter password' },
+                  { min: 6, message: 'Password must be at least 6 characters' }
+                ]}
+                hasFeedback
+              >
+                <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="confirm_password"
+                label="Confirm Password"
+                dependencies={['password']}
+                hasFeedback
+                rules={[
+                  { required: true, message: 'Please confirm your password' },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('password') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Passwords do not match!'));
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider style={{ margin: '16px 0 24px 0' }} />
+
+          <div style={{ textAlign: 'right' }}>
+            <Button onClick={onCancel} style={{ marginRight: 8 }}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Register
+            </Button>
+          </div>
+        </Form>
+      </div>
     </ModalWrapper>
   );
 };
 
 export default UserRegistrationModal;
-        

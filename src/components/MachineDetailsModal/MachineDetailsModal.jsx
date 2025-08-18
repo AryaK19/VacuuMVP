@@ -36,7 +36,7 @@ import {
   PlusOutlined
 } from '@ant-design/icons';
 import { getMachineDetails, getMachineServiceReports } from '../../services/machine.service';
-import { getServiceReportDetail } from '../../services/dashboard.service';
+import { getServiceReportDetail } from '../../services/service_report.service';
 import ServiceReportDetailsModal from '../ServiceReportDetailsModal/ServiceReportDetailsModal';
 import ModalWrapper from '../ModalWrapper/ModalWrapper';
 import CustomerRegistrationForm from '../CustomerRegistrationForm/CustomerRegistrationForm';

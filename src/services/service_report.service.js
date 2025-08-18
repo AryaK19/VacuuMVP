@@ -53,6 +53,17 @@ export const createServiceReport = async (formData) => {
   }
 };
 
+export const getServiceReportDetail = async (reportId) => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/service-reports/${reportId}/details`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching service report detail:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
 /**
  * Get service types for dropdown
  */

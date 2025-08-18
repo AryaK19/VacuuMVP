@@ -150,3 +150,22 @@ export const updateMachine = async (machineId, formData) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+/**
+ * Get model number from part number
+ * @param {string} partNo
+ * @returns {Promise<{ success: boolean, model_no?: string }>}
+ */
+export const getModelFromPart = async (partNo) => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/machines/model-from-part`, {
+      params: { part_no: partNo }
+    });
+    return response.data; // { success: true, model_no: "..." } or { success: false }
+  } catch (error) {
+    console.error('Error fetching model from part:', error);
+    // Return a consistent format
+    return { success: false };
+  }
+};

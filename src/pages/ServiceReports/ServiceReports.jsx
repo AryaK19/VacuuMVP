@@ -19,7 +19,7 @@ import {
 import { getServiceReports } from '../../services/service_report.service';
 import ServiceReportForm from '../../components/ServiceReportForm/ServiceReportForm';
 import './ServiceReports.css';
-import { getServiceReportDetail } from '../../services/dashboard.service';
+import { getServiceReportDetail } from '../../services/service_report.service';
 import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 
 const { Title } = Typography;
@@ -135,16 +135,17 @@ const ServiceReports = () => {
   
   const columns = [
     {
-      title: 'Machine',
-      key: 'machine',
+      title: 'Serial No.',
+      key: 'serial_no',
       render: (record) => {
-        if (record.machine) {
-          return `${record.machine.serial_no || ''} (${record.machine.model_no || ''})`;
-        } else if (record.sold_machine) {
-          return `${record.sold_machine.serial_no || ''} (${record.sold_machine.model_no || ''})`;
-        } else {
-          return 'N/A';
-        }
+         return `${record.machine.serial_no || ''}`;
+      },
+    },
+    {
+      title: 'Model No.',
+      key: 'model_no',
+      render: (record) => {
+         return `${record.machine.model_no || ''}`;
       },
     },
     {

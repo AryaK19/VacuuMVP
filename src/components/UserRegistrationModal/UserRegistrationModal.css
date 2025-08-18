@@ -1,47 +1,79 @@
-.user-registration-modal .ant-modal-header {
-  border-bottom: 1px solid #f0f0f0;
-  padding: 16px 24px;
-}
-
 .user-registration-modal .ant-modal-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1890ff;
-}
-
-.user-registration-modal .ant-modal-body {
-  padding: 24px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #222; /* Neutral dark */
+  letter-spacing: 0.5px;
 }
 
 .user-registration-form .ant-form-item-label > label {
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+  color: #222; /* Neutral dark */
+  letter-spacing: 0.2px;
+}
+
+.user-registration-modal .ant-modal-body {
+  padding: 32px 32px 24px 32px;
+  background: #fafdff;
+}
+
+.user-registration-form-wrapper {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(24, 144, 255, 0.06);
+  padding: 32px 24px 16px 24px;
+  margin: 0 auto;
+  max-width: 520px;
+}
+
+.user-registration-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #1890ff;
+  letter-spacing: 0.2px;
 }
 
 .user-registration-form .ant-input-affix-wrapper {
-  border-radius: 6px;
-  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  border: 1.5px solid #e6f7ff;
+  background: #f7fbff;
   transition: all 0.3s;
+  font-size: 15px;
 }
 
 .user-registration-form .ant-input-affix-wrapper:focus,
 .user-registration-form .ant-input-affix-wrapper-focused {
   border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.13);
+  background: #fff;
 }
 
 .registration-error-alert {
-  border-radius: 6px;
+  border-radius: 8px;
+  margin-bottom: 18px;
 }
 
 .user-registration-form .ant-btn-primary {
   background: #1890ff;
   border-color: #1890ff;
   border-radius: 6px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 0 32px;
+  height: 40px;
+  letter-spacing: 0.2px;
 }
 
 .user-registration-form .ant-btn-primary:hover {
   background: #40a9ff;
   border-color: #40a9ff;
+}
+
+.user-registration-form .ant-btn {
+  border-radius: 6px;
+  font-size: 15px;
+  height: 40px;
+  padding: 0 24px;
+}
+
+.user-registration-form .ant-form-item {
+  margin-bottom: 18px;
 }

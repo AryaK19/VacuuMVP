@@ -37,6 +37,7 @@ import {
 } from '../../services/service_report.service';
 import { getParts } from '../../services/machine.service';
 import CustomerRegistrationForm from '../CustomerRegistrationForm/CustomerRegistrationForm';
+import MachineCreationModal from '../MachineCreationModal/MachineCreationModal';
 import './ServiceReportForm.css';
 
 const { Step } = Steps;
@@ -56,6 +57,8 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [availableParts, setAvailableParts] = useState([]);
   const [partsSearchLoading, setPartsSearchLoading] = useState(false);
+  const [showCreationModal, setShowCreationModal] = useState(false);
+  const [creationSerialNo, setCreationSerialNo] = useState('');
 
   useEffect(() => {
     if (visible) {
@@ -96,10 +99,13 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
       } else {
         message.error('Machine not found');
         setMachine(null);
+        // Show Add Pump option
+        setCreationSerialNo(serialNo);
       }
     } catch (error) {
       message.error('Machine not found or error occurred');
       setMachine(null);
+      setCreationSerialNo(serialNo);
     } finally {
       setSearchLoading(false);
     }
@@ -292,8 +298,26 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
     debounceSearch(searchValue);
   };
 
-  // Add this function to render the selected part
-
+  const handleCreationSuccess = async () => {
+    setShowCreationModal(false);
+    try {
+      const response = await getMachineBySerial(creationSerialNo);
+      if (response.success && response.machine) {
+        setMachine(response.machine);
+        // If customer info is missing, open customer registration form
+        if (!response.machine.customer_name || !response.machine.is_sold) {
+          setShowCustomerForm(true);
+          // Do NOT advance to next step yet
+          message.success('Pump created! Please register customer details.');
+        } else {
+          setCurrentStep(1);
+          message.success('Pump created and selected!');
+        }
+      }
+    } catch (e) {
+      message.error('Failed to fetch the newly created pump');
+    }
+  };
 
   const steps = [
     {
@@ -326,6 +350,7 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
             </Button>
           </Space.Compact>
           
+          {/* Show machine info if found */}
           {machine && machine.customer_name && (
             <Card style={{ marginTop: 24 }} title="Machine Information">
               <Descriptions column={2} bordered size="small">
@@ -342,6 +367,31 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
                 <Descriptions.Item label="Address" span={2}>{machine.customer_address || 'N/A'}</Descriptions.Item>
               </Descriptions>
             </Card>
+          )}
+
+          {/* If machine not found, show Add Pump button */}
+          {!machine && creationSerialNo && (
+            <div style={{ marginTop: 24 }}>
+              <Alert
+                message="Pump not found"
+                description={
+                  <span>
+                    No pump found with serial number <b>{creationSerialNo}</b>.<br />
+                    Would you like to add a new pump with this serial number?
+                  </span>
+                }
+                type="warning"
+                showIcon
+                style={{ marginBottom: 16 }}
+              />
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setShowCreationModal(true)}
+              >
+                Add Pump
+              </Button>
+            </div>
           )}
         </div>
       ),
@@ -820,12 +870,22 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
           </div>
         </Form>
       </Modal>
-      
+
       <CustomerRegistrationForm
         visible={showCustomerForm}
         machine={machine}
         onCancel={handleCustomerRegistrationCancel}
         onSuccess={handleCustomerRegistrationSuccess}
+      />
+
+      {/* Pump creation modal */}
+      <MachineCreationModal
+        visible={showCreationModal}
+        onCancel={() => setShowCreationModal(false)}
+        onSuccess={handleCreationSuccess}
+        type="pump"
+        title="Create New Pump"
+        initialValues={{ serial_no: creationSerialNo }}
       />
     </>
   );

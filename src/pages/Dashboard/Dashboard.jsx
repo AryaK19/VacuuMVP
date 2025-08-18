@@ -17,7 +17,8 @@ import {
   AppstoreOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
-import { getDashboardStatistics, getRecentActivities, getServiceReportDetail } from '../../services/dashboard.service';
+import { getDashboardStatistics, getRecentActivities } from '../../services/dashboard.service';
+import { getServiceReportDetail } from '../../services/service_report.service';
 import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
 import './Dashboard.css';
 

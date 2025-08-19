@@ -1,5 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Typography, List, Avatar, Spin, message, Tabs } from 'antd';
+import React, { useState, useEffect } from "react";
+import {
+  Row,
+  Col,
+  Card,
+  Statistic,
+  Typography,
+  List,
+  Avatar,
+  Spin,
+  message,
+  Tabs,
+} from "antd";
 import {
   UserOutlined,
   ShoppingCartOutlined,
@@ -15,14 +26,21 @@ import {
   CloseCircleOutlined,
   FileTextOutlined,
   AppstoreOutlined,
-} from '@ant-design/icons';
-import { useAuth } from '../../context/AuthContext';
-import { getDashboardStatistics, getRecentActivities } from '../../services/dashboard.service';
-import { getServiceReportDetail } from '../../services/service_report.service';
-import ServiceReportDetailsModal from '../../components/ServiceReportDetailsModal/ServiceReportDetailsModal';
-import './Dashboard.css';
+} from "@ant-design/icons";
+import { useAuth } from "../../context/AuthContext";
+import {
+  getDashboardStatistics,
+  getRecentActivities,
+} from "../../services/dashboard.service";
+import { getServiceReportDetail } from "../../services/service_report.service";
+import ServiceReportDetailsModal from "../../components/ServiceReportDetailsModal/ServiceReportDetailsModal";
+import "./Dashboard.css";
 
-import { ServiceTypeChart, PartNumberChart } from '../../components/Charts';
+import {
+  ServiceTypeChart,
+  PartNumberChart,
+  CustomerMachineChart,
+} from "../../components/Charts";
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
@@ -33,7 +51,7 @@ const Dashboard = () => {
     total_distributors: 0,
     sold_machines: 0,
     available_machines: 0,
-    monthly_service_reports: 0
+    monthly_service_reports: 0,
   });
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -43,26 +61,56 @@ const Dashboard = () => {
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 5, // Show only 5 recent activities on dashboard
-    total: 0
+    total: 0,
   });
 
   // Function to get icon based on service type
   const getServiceTypeIcon = (serviceType) => {
-    const iconStyle = { fontSize: '16px' };
-    
+    const iconStyle = { fontSize: "16px" };
+
     switch (serviceType.toLowerCase()) {
-      case 'health check':
-        return <Avatar icon={<SafetyCertificateOutlined />} style={{ backgroundColor: '#52c41a', ...iconStyle }} />;
-      case 'paid':
-        return <Avatar icon={<DollarOutlined />} style={{ backgroundColor: '#1677ff', ...iconStyle }} />;
-      case 'warranty':
-        return <Avatar icon={<ToolOutlined />} style={{ backgroundColor: '#fa8c16', ...iconStyle }} />;
-      case 'amc':
-        return <Avatar icon={<BuildOutlined />} style={{ backgroundColor: '#f5222d', ...iconStyle }} />;
-      case 'installation':
-        return <Avatar icon={<SettingOutlined />} style={{ backgroundColor: '#722ed1', ...iconStyle }} />;
+      case "health check":
+        return (
+          <Avatar
+            icon={<SafetyCertificateOutlined />}
+            style={{ backgroundColor: "#52c41a", ...iconStyle }}
+          />
+        );
+      case "paid":
+        return (
+          <Avatar
+            icon={<DollarOutlined />}
+            style={{ backgroundColor: "#1677ff", ...iconStyle }}
+          />
+        );
+      case "warranty":
+        return (
+          <Avatar
+            icon={<ToolOutlined />}
+            style={{ backgroundColor: "#fa8c16", ...iconStyle }}
+          />
+        );
+      case "amc":
+        return (
+          <Avatar
+            icon={<BuildOutlined />}
+            style={{ backgroundColor: "#f5222d", ...iconStyle }}
+          />
+        );
+      case "installation":
+        return (
+          <Avatar
+            icon={<SettingOutlined />}
+            style={{ backgroundColor: "#722ed1", ...iconStyle }}
+          />
+        );
       default:
-        return <Avatar icon={<BellOutlined />} style={{ backgroundColor: '#8c8c8c', ...iconStyle }} />;
+        return (
+          <Avatar
+            icon={<BellOutlined />}
+            style={{ backgroundColor: "#8c8c8c", ...iconStyle }}
+          />
+        );
     }
   };
 
@@ -76,13 +124,13 @@ const Dashboard = () => {
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInMinutes < 1) {
-      return 'Just now';
+      return "Just now";
     } else if (diffInMinutes < 60) {
-      return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+      return `${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`;
     } else if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
     } else if (diffInDays < 7) {
-      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+      return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
     } else {
       return activityDate.toLocaleDateString();
     }
@@ -96,7 +144,7 @@ const Dashboard = () => {
       const reportDetail = await getServiceReportDetail(reportId);
       setSelectedReport(reportDetail);
     } catch (error) {
-      message.error('Failed to load service report details');
+      message.error("Failed to load service report details");
       setModalVisible(false);
     } finally {
       setModalLoading(false);
@@ -116,8 +164,8 @@ const Dashboard = () => {
       const stats = await getDashboardStatistics();
       setDashboardStats(stats);
     } catch (error) {
-      console.error('Error fetching dashboard statistics:', error);
-      message.error('Failed to load dashboard statistics');
+      console.error("Error fetching dashboard statistics:", error);
+      message.error("Failed to load dashboard statistics");
     } finally {
       setStatsLoading(false);
     }
@@ -130,28 +178,28 @@ const Dashboard = () => {
       const response = await getRecentActivities({
         page: pagination.page,
         limit: pagination.limit,
-        sort_by: 'created_at',
-        sort_order: 'desc'
+        sort_by: "created_at",
+        sort_order: "desc",
       });
 
-      const formattedActivities = response.items.map(activity => ({
+      const formattedActivities = response.items.map((activity) => ({
         id: activity.report_id,
         title: `${activity.user_name} created a ${activity.service_type_name} service report`,
         when: getRelativeTime(activity.created_at),
         avatar: getServiceTypeIcon(activity.service_type_name),
         serviceType: activity.service_type_name,
         userName: activity.user_name,
-        createdAt: activity.created_at
+        createdAt: activity.created_at,
       }));
 
       setRecentActivities(formattedActivities);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
-        total: response.total
+        total: response.total,
       }));
     } catch (error) {
-      console.error('Error fetching recent activities:', error);
-      message.error('Failed to load recent activities');
+      console.error("Error fetching recent activities:", error);
+      message.error("Failed to load recent activities");
     } finally {
       setLoading(false);
     }
@@ -165,7 +213,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <Title level={2}>Welcome back, {user?.name || 'User'}</Title>
+        <Title level={2}>Welcome back, {user?.name || "User"}</Title>
         <p>Here's what's happening today</p>
       </div>
 
@@ -177,7 +225,7 @@ const Dashboard = () => {
                 title="Total Distributors"
                 value={dashboardStats.total_distributors}
                 prefix={<TeamOutlined />}
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: "#1890ff" }}
               />
             </Spin>
           </Card>
@@ -189,7 +237,7 @@ const Dashboard = () => {
                 title="Sold/Available Machines"
                 value={`${dashboardStats.sold_machines}/${dashboardStats.available_machines}`}
                 prefix={<AppstoreOutlined />}
-                valueStyle={{ color: '#52c41a' }}
+                valueStyle={{ color: "#52c41a" }}
               />
             </Spin>
           </Card>
@@ -201,32 +249,36 @@ const Dashboard = () => {
                 title="Monthly Reports"
                 value={dashboardStats.monthly_service_reports}
                 prefix={<FileTextOutlined />}
-                valueStyle={{ color: '#722ed1' }}
+                valueStyle={{ color: "#722ed1" }}
               />
             </Spin>
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
+      <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
         <Col xs={24} lg={16}>
-           <Card title="Analytics Dashboard">
-            <Tabs defaultActiveKey="serviceTypes" className="dashboard-tabs">
+          <Card title="Analytics Dashboard">
+            <Tabs defaultActiveKey="topCustomers" className="dashboard-tabs">
+              <TabPane tab="Top Customers" key="topCustomers">
+                <CustomerMachineChart />
+              </TabPane>
               <TabPane tab="Service Types" key="serviceTypes">
                 <ServiceTypeChart />
               </TabPane>
               <TabPane tab="Pump Performance" key="partNumbers">
                 <PartNumberChart />
               </TabPane>
+
             </Tabs>
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card 
-            title="Recent Activities" 
+          <Card
+            title="Recent Activities"
             className="recent-activities-card"
             extra={
-              <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+              <span style={{ fontSize: "12px", color: "#8c8c8c" }}>
                 {pagination.total} total activities
               </span>
             }
@@ -237,20 +289,18 @@ const Dashboard = () => {
                   itemLayout="horizontal"
                   dataSource={recentActivities}
                   renderItem={(item) => (
-                    <List.Item 
-                      style={{ cursor: 'pointer' }}
+                    <List.Item
+                      style={{ cursor: "pointer" }}
                       onClick={() => handleActivityClick(item.id)}
                       actions={[<EyeOutlined key="view" />]}
                     >
                       <List.Item.Meta
                         avatar={item.avatar}
                         title={
-                          <div style={{ fontSize: '14px' }}>
-                            {item.title}
-                          </div>
+                          <div style={{ fontSize: "14px" }}>{item.title}</div>
                         }
                         description={
-                          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                          <div style={{ fontSize: "12px", color: "#8c8c8c" }}>
                             {item.when}
                           </div>
                         }
@@ -259,7 +309,13 @@ const Dashboard = () => {
                   )}
                 />
               ) : (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#8c8c8c' }}>
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    color: "#8c8c8c",
+                  }}
+                >
                   No recent activities found
                 </div>
               )}

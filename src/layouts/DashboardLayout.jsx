@@ -216,7 +216,7 @@ const DashboardLayout = () => {
       <Layout className={`site-layout ${collapsed ? "collapsed" : ""}`}>
         <Header
           className="site-header"
-          style={{ background: colorBgContainer }}
+          // style={{ background: colorBgContainer }}
         >
           <div className="header-left">
             <Button

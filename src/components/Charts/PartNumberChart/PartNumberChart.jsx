@@ -170,7 +170,7 @@ const PartNumberChart = () => {
                   dataKey="count" 
                   name="Service Count" 
                   radius={[0, 4, 4, 0]}
-                  isAnimationActive={false}
+                  isAnimationActive={true}
                 >
                   <LabelList 
                     dataKey="count"

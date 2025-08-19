@@ -219,7 +219,7 @@ const PumpsContent = () => {
       key: "customer",
       sorter: true,
       render: (record) => {
-        return record.sold_info ? record.sold_info.customer_name : "Not Sold";
+        return record.sold_info ? record.sold_info.customer_name : "Not Assigned to Customer";
       },
     },
     {

@@ -169,3 +169,20 @@ export const getModelFromPart = async (partNo) => {
     return { success: false };
   }
 };
+
+/**
+ * Get customer names for autocomplete
+ * @returns {Promise<{ customers: Array<{ customer_name: string, customer_contact?: string, customer_address?: string, customer_email?: string }> }>}
+ */
+export const getCustomerNames = async (search = "") => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/machines/customers`, {
+      params: search ? { search } : {},
+    });
+    return response.data; // { customers: [...] }
+  } catch (error) {
+    console.error('Error fetching customer names:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};

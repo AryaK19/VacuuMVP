@@ -7,7 +7,8 @@ import {
   Alert,
   Row,
   Col,
-  message
+  message,
+  AutoComplete,
 } from 'antd';
 import {
   UserOutlined,
@@ -17,6 +18,7 @@ import {
   CheckCircleOutlined
 } from '@ant-design/icons';
 import { createCustomerRecord } from '../../services/service_report.service';
+import { getCustomerNames } from '../../services/machine.service';
 import './CustomerRegistrationForm.css';
 
 const { TextArea } = Input;
@@ -24,12 +26,56 @@ const { TextArea } = Input;
 const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [customerOptions, setCustomerOptions] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  // Fetch customer names as user types
+  const handleCustomerSearch = async (value) => {
+    if (!value || value.length < 2) {
+      setCustomerOptions([]);
+      return;
+    }
+    setSearching(true);
+    try {
+      const res = await getCustomerNames(value);
+      setCustomerOptions(
+        (res.customers || []).map((c) => ({
+          value: c.customer_name,
+          label: (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: 36, justifyContent: 'center' }}>
+              <span style={{ fontWeight: 500 }}>{c.customer_name}</span>
+              <span style={{ fontSize: 12, color: '#888' }}>
+                {c.customer_contact || ''} {c.customer_email ? `| ${c.customer_email}` : ''}
+              </span>
+            </div>
+          ),
+          data: c,
+        }))
+      );
+    } catch {
+      setCustomerOptions([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  // When user selects a customer, auto-fill other fields (but keep editable)
+  const handleCustomerSelect = (value, option) => {
+    if (option && option.data) {
+      const { customer_contact, customer_email, customer_address } = option.data;
+      form.setFieldsValue({
+        customer_contact: customer_contact || '',
+        customer_email: customer_email || '',
+        customer_address: customer_address || '',
+      });
+    }
+  };
 
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
       const customerData = {
-        machine_id: machine.id || machine.machine_id, // Try both possible field names
+        machine_id: machine.id || machine.machine_id,
         customer_name: values.customer_name,
         customer_contact: values.customer_contact,
         customer_email: values.customer_email,
@@ -47,7 +93,6 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
       }
     } catch (error) {
       let errorMessage = 'Failed to register customer';
-      
       if (error.detail) {
         if (Array.isArray(error.detail)) {
           errorMessage = error.detail.map(err => err.msg).join(', ');
@@ -57,7 +102,6 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -133,11 +177,21 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
             { min: 2, message: 'Customer name must be at least 2 characters' }
           ]}
         >
-          <Input
-            prefix={<UserOutlined />}
+          <AutoComplete
+            options={customerOptions}
+            onSearch={handleCustomerSearch}
+            onSelect={handleCustomerSelect}
             placeholder="Enter customer full name"
             size="large"
-          />
+            allowClear
+            filterOption={false}
+            notFoundContent={searching ? 'Searching...' : null}
+            dropdownMatchSelectWidth={false}
+            dropdownStyle={{ minWidth: 320, maxWidth: 400 }}
+            popupClassName="customer-autocomplete-dropdown"
+          >
+            <Input prefix={<UserOutlined />} />
+          </AutoComplete>
         </Form.Item>
 
         <Row gutter={16}>
@@ -212,3 +266,16 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
 };
 
 export default CustomerRegistrationForm;
+
+/* Add to your CustomerRegistrationForm.css for better dropdown UX */
+//
+// .customer-autocomplete-dropdown .ant-select-item-option {
+//   min-height: 36px;
+//   display: flex;
+//   align-items: center;
+//   padding: 6px 12px;
+// }
+//
+// .customer-autocomplete-dropdown .ant-select-item-option-active {
+//   background: #e6f7ff !important;
+// }

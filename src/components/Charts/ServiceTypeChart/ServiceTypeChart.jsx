@@ -16,12 +16,13 @@ const ServiceTypeChart = () => {
 
   // Soothing solid colors for different service types
   const colorMap = {
-    'Warranty': '#e6f7ff',
-    'AMC': '#d9f7be',
-    'Paid': '#fff7e6',
-    'Installation': '#fff1f0',
-    'Health Check': '#f0f5ff'
+    'Warranty': '#1890ff',
+    'AMC': '',
+    'Paid': '#faad14',
+    'Installation': '#52c41a',
+    'Health Check': '#b37feb'
   };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -160,7 +161,7 @@ const ServiceTypeChart = () => {
                   dataKey="count" 
                   name="Number of Services" 
                   radius={[4, 4, 0, 0]}
-                  isAnimationActive={false}
+                  isAnimationActive={true}
                 >
                   <LabelList 
                     dataKey="count"

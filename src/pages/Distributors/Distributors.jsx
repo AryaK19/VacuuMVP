@@ -217,22 +217,6 @@ const DistributorsContent = () => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle" className="action-column">
-          <Tooltip title="View Details">
-            <Button 
-              type="primary" 
-              icon={<EyeOutlined />} 
-              size="small"
-              onClick={() => console.log('View distributor details:', record)}
-            />
-          </Tooltip>
-          <Tooltip title="Edit">
-            <Button 
-              type="default" 
-              icon={<EditOutlined />} 
-              size="small"
-              onClick={() => console.log('Edit distributor:', record)}
-            />
-          </Tooltip>
           <Tooltip title="Delete">
             <Button 
               type="default" 

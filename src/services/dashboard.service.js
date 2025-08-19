@@ -69,4 +69,15 @@ export const getPartNumberStatistics = async () => {
 };
 
 
+export const getCustomerMachineStatistics = async () => {
+  prepareRequest();
+  try {
+    const response = await axios.get(`${API_URL}/dashboard/customer-machines`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching customer machine statistics:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
 

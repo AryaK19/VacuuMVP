@@ -180,17 +180,18 @@ const ServiceReportDetailsModal = ({
                 {reportData.user_name}
               </Descriptions.Item>
               
+           
+              <Descriptions.Item label="Created At">
+                {formatDate(reportData.created_at)}
+              </Descriptions.Item>
               <Descriptions.Item label="Email">
                 {reportData.user_email}
               </Descriptions.Item>
               
-              <Descriptions.Item label="Created At">
-                {formatDate(reportData.created_at)}
+              <Descriptions.Item label="">
+                
               </Descriptions.Item>
               
-              <Descriptions.Item label="Updated At">
-                {formatDate(reportData.updated_at)}
-              </Descriptions.Item>
               
               <Descriptions.Item label="Problem" span={2}>
                 {reportData.problem || 'No problem description provided'}

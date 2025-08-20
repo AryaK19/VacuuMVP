@@ -172,21 +172,25 @@ const ServiceReportDetailsModal = ({
                 </Tag>
               </Descriptions.Item>
               
-              <Descriptions.Item label="Service Person">
-                {reportData.service_person_name || 'Not specified'}
-              </Descriptions.Item>
               
-              <Descriptions.Item label="Created By">
+              <Descriptions.Item label="Distributor">
                 {reportData.user_name}
               </Descriptions.Item>
               
-           
-              <Descriptions.Item label="Created At">
-                {formatDate(reportData.created_at)}
+              <Descriptions.Item label="Service Person">
+                {reportData.service_person_name || 'Not specified'}
               </Descriptions.Item>
+
               <Descriptions.Item label="Email">
                 {reportData.user_email}
               </Descriptions.Item>
+           
+              <Descriptions.Item label="Serviced At">
+                {formatDate(reportData.created_at)}
+              </Descriptions.Item>
+
+
+              
               
               <Descriptions.Item label="">
                 
@@ -209,20 +213,21 @@ const ServiceReportDetailsModal = ({
                   <UserOutlined /> Customer Information
                 </Title>
                 <Descriptions bordered column={2} size="small">
+                  <Descriptions.Item label="Customer Company">
+                    {reportData.customer_info.customer_company || 'Not specified'}
+                  </Descriptions.Item>
+
+
                   <Descriptions.Item label="Customer Name">
                     {reportData.customer_info.customer_name || 'Not specified'}
                   </Descriptions.Item>
-                  
-                  <Descriptions.Item label="Contact">
+
+                  <Descriptions.Item label="Contact Number">
                     {reportData.customer_info.customer_contact || 'Not specified'}
                   </Descriptions.Item>
                   
                   <Descriptions.Item label="Email">
                     {reportData.customer_info.customer_email || 'Not specified'}
-                  </Descriptions.Item>
-                  
-                  <Descriptions.Item label="Purchase Date">
-                    {formatDate(reportData.customer_info.sold_date)}
                   </Descriptions.Item>
                   
                   <Descriptions.Item label="Address" span={2}>

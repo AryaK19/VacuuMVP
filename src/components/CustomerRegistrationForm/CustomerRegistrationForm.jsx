@@ -15,7 +15,8 @@ import {
   PhoneOutlined,
   MailOutlined,
   HomeOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  ApartmentOutlined
 } from '@ant-design/icons';
 import { createCustomerRecord } from '../../services/service_report.service';
 import { getCustomerNames } from '../../services/machine.service';
@@ -45,6 +46,7 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: 36, justifyContent: 'center' }}>
               <span style={{ fontWeight: 500 }}>{c.customer_name}</span>
               <span style={{ fontSize: 12, color: '#888' }}>
+                {c.customer_company ? `${c.customer_company} | ` : ''}
                 {c.customer_contact || ''} {c.customer_email ? `| ${c.customer_email}` : ''}
               </span>
             </div>
@@ -62,11 +64,12 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
   // When user selects a customer, auto-fill other fields (but keep editable)
   const handleCustomerSelect = (value, option) => {
     if (option && option.data) {
-      const { customer_contact, customer_email, customer_address } = option.data;
+      const { customer_contact, customer_email, customer_address, customer_company } = option.data;
       form.setFieldsValue({
         customer_contact: customer_contact || '',
         customer_email: customer_email || '',
         customer_address: customer_address || '',
+        customer_company: customer_company || '',
       });
     }
   };
@@ -79,7 +82,8 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
         customer_name: values.customer_name,
         customer_contact: values.customer_contact,
         customer_email: values.customer_email,
-        customer_address: values.customer_address
+        customer_address: values.customer_address,
+        customer_company: values.customer_company,
       };
 
       const response = await createCustomerRecord(customerData);
@@ -194,6 +198,21 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
           </AutoComplete>
         </Form.Item>
 
+        <Form.Item
+          label="Company"
+          name="customer_company"
+          rules={[
+            { required: true, message: 'Please enter company name' },
+            { min: 2, message: 'Company name must be at least 2 characters' }
+          ]}
+        >
+          <Input
+            prefix={<ApartmentOutlined />}
+            placeholder="Company name"
+            size="large"
+          />
+        </Form.Item>
+
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -266,16 +285,3 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
 };
 
 export default CustomerRegistrationForm;
-
-/* Add to your CustomerRegistrationForm.css for better dropdown UX */
-//
-// .customer-autocomplete-dropdown .ant-select-item-option {
-//   min-height: 36px;
-//   display: flex;
-//   align-items: center;
-//   padding: 6px 12px;
-// }
-//
-// .customer-autocomplete-dropdown .ant-select-item-option-active {
-//   background: #e6f7ff !important;
-// }

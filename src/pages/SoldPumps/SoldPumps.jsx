@@ -25,12 +25,12 @@ import {
   EditOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { getPumps, deleteMachine } from "../../services/machine.service";
+import { getPumps, deleteSoldMachine } from "../../services/machine.service";
 import MachineCreationModal from "../../components/MachineCreationModal/MachineCreationModal";
 import MachineDetailsModal from "../../components/MachineDetailsModal/MachineDetailsModal";
 import MachineEditModal from "../../components/MachineEditModal/MachineEditModal";
 import ModalWrapper from "../../components/ModalWrapper/ModalWrapper";
-import "./Pumps.css";
+import "./SoldPumps.css";
 
 const { Title } = Typography;
 
@@ -164,14 +164,14 @@ const PumpsContent = () => {
       okType: "danger",
       cancelText: "No, Cancel",
       onOk() {
-        return handleDeletePump(pump.id);
+        return handleDeletePump(pump.sold_info.id);
       },
     });
   };
 
   const handleDeletePump = async (pumpId) => {
     try {
-      await deleteMachine(pumpId);
+      await deleteSoldMachine(pumpId);
       message.success("Pump deleted successfully");
       fetchPumps(); // Refresh the list
     } catch (error) {
@@ -186,9 +186,12 @@ const PumpsContent = () => {
           <BarcodeOutlined className="header-icon" /> Serial No
         </span>
       ),
-      dataIndex: "serial_no",
       key: "serial_no",
+      
       sorter: true,
+      render: (record) => {
+        return record.sold_info ? record.sold_info.serial_no : "";
+      } 
     },
     {
       title: () => (
@@ -232,7 +235,7 @@ const PumpsContent = () => {
               type="primary"
               icon={<EyeOutlined />}
               size="small"
-              onClick={() => handleViewMachine(record.id)}
+              onClick={() => handleViewMachine(record.sold_info.id)}
             />
           </Tooltip>
           <Tooltip title="Edit">
@@ -240,7 +243,7 @@ const PumpsContent = () => {
               type="default"
               icon={<EditOutlined />}
               size="small"
-              onClick={() => handleEditMachine(record.id)}
+              onClick={() => handleEditMachine(record.sold_info.id)}
             />
           </Tooltip>
           <Tooltip title="Delete">

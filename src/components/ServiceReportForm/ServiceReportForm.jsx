@@ -37,7 +37,7 @@ import {
 } from '../../services/service_report.service';
 import { getParts } from '../../services/machine.service';
 import CustomerRegistrationForm from '../CustomerRegistrationForm/CustomerRegistrationForm';
-import MachineCreationModal from '../MachineCreationModal/MachineCreationModal';
+import SoldMachineCreationModal from '../SoldMachineCreationModal/SoldMachineCreationModal';
 import './ServiceReportForm.css';
 
 const { Step } = Steps;
@@ -170,10 +170,12 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
       const formValues = form.getFieldsValue(true);
       
       const formData = new FormData();
+
+
       
     
 
-      formData.append('machine_id', machine.machine_id);
+      formData.append('sold_machine_id', machine.sold_machine_id);
       // Add form values - ensure they're properly collected
       if (formValues.service_type_id) {
         formData.append('service_type_id', formValues.service_type_id);
@@ -216,6 +218,9 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
       fileList.forEach(file => {
         formData.append('files', file.originFileObj);
       });
+
+
+      console.log('Submitting service report with data:', formData);
       
 
       
@@ -465,13 +470,19 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
                     </Col>
                   </Row>
                   <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={12}>
+                    <Col span={8}>
+                      <div>
+                        <Text type="secondary" style={{ fontSize: '12px' }}>Company</Text>
+                        <div style={{ fontWeight: 500 }}>{machine.customer_company || 'N/A'}</div>
+                      </div>
+                    </Col>
+                    <Col span={8}>
                       <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>Customer</Text>
                         <div style={{ fontWeight: 500 }}>{machine.customer_name || 'N/A'}</div>
                       </div>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                       <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>Contact</Text>
                         <div style={{ fontWeight: 500 }}>{machine.customer_contact || 'N/A'}</div>
@@ -580,13 +591,19 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
                     </Col>
                   </Row>
                   <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={12}>
+                    <Col span={8}>
+                      <div>
+                        <Text type="secondary" style={{ fontSize: '12px' }}>Company</Text>
+                        <div style={{ fontWeight: 500 }}>{machine.customer_company || 'N/A'}</div>
+                      </div>
+                    </Col>
+                    <Col span={8}>
                       <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>Customer</Text>
                         <div style={{ fontWeight: 500 }}>{machine.customer_name || 'N/A'}</div>
                       </div>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                       <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>Contact</Text>
                         <div style={{ fontWeight: 500 }}>{machine.customer_contact || 'N/A'}</div>
@@ -685,13 +702,19 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
                     </Col>
                   </Row>
                   <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={12}>
+                    <Col span={8}>
+                      <div>
+                        <Text type="secondary" style={{ fontSize: '12px' }}>Company</Text>
+                        <div style={{ fontWeight: 500 }}>{machine.customer_company || 'N/A'}</div>
+                      </div>
+                    </Col>
+                    <Col span={8}>
                       <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>Customer</Text>
                         <div style={{ fontWeight: 500 }}>{machine.customer_name || 'N/A'}</div>
                       </div>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                       <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>Contact</Text>
                         <div style={{ fontWeight: 500 }}>{machine.customer_contact || 'N/A'}</div>
@@ -879,12 +902,12 @@ const ServiceReportForm = ({ visible, onCancel, onSuccess }) => {
       />
 
       {/* Pump creation modal */}
-      <MachineCreationModal
+      <SoldMachineCreationModal
         visible={showCreationModal}
         onCancel={() => setShowCreationModal(false)}
         onSuccess={handleCreationSuccess}
         type="pump"
-        title="Create New Pump"
+        title="Assign New Pump"
         initialValues={{ serial_no: creationSerialNo }}
       />
     </>

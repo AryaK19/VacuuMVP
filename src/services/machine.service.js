@@ -24,7 +24,7 @@ export const getPumps = async (params = {}) => {
     
     const queryParams = { ...defaultParams, ...params };
     
-    const response = await axios.get(`${API_URL}/machines/pumps`, { params: queryParams });
+    const response = await axios.get(`${API_URL}/machines/sold_pumps`, { params: queryParams });
     return response.data;
   } catch (error) {
     console.error('Error fetching pumps:', error);
@@ -82,13 +82,33 @@ export const createPart = async (formData) => {
   }
 };
 
+
+export const createSoldPump = async (formData) => {
+  prepareRequest();
+  try {
+    console.log(formData);
+    const response = await axios.post(`${API_URL}/machines/sold_pumps/create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating part:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
+
+
+
 /**
  * Get detailed machine information
  */
 export const getMachineDetails = async (machineId) => {
   prepareRequest();
   try {
-    const response = await axios.get(`${API_URL}/machines/details/${machineId}`);
+    const response = await axios.get(`${API_URL}/machines/sold/details/${machineId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching machine details:', error);
@@ -122,6 +142,18 @@ export const getMachineServiceReports = async (machineId, params = {}) => {
 /**
  * Delete a machine (pump or part)
  */
+export const deleteSoldMachine = async (machineId) => {
+  prepareRequest();
+  try {
+    const response = await axios.delete(`${API_URL}/machines/${machineId}/delete`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting machine:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+
+
 export const deleteMachine = async (machineId) => {
   prepareRequest();
   try {

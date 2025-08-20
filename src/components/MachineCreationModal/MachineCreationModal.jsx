@@ -4,51 +4,46 @@ import { UploadOutlined, NumberOutlined, TagOutlined } from '@ant-design/icons';
 import ModalWrapper from '../ModalWrapper/ModalWrapper';
 import { createPump, createPart, getModelFromPart } from '../../services/machine.service';
 
-/**
- * A modal for creating new machines (pumps or parts)
- * 
- * @param {Object} props - Component props
- * @param {boolean} props.visible - Controls visibility of the modal
- * @param {Function} props.onCancel - Function called when modal is cancelled
- * @param {Function} props.onSuccess - Function called when creation is successful
- * @param {string} props.type - Type of machine to create ('pump' or 'part')
- * @param {string} [props.title] - Modal title
- */
-const MachineCreationModal = ({ 
-  visible, 
-  onCancel, 
-  onSuccess, 
-  type, 
+const MachineCreationModal = ({
+  visible,
+  onCancel,
+  onSuccess,
+  type,
   title,
-  ...restProps 
+  ...restProps
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [modelLoading, setModelLoading] = useState(false);
   const [modelAutoFilled, setModelAutoFilled] = useState(false);
-  
+  const [modelNotFound, setModelNotFound] = useState(false);
+
   // Reset form and errors when modal opens/closes
   React.useEffect(() => {
     if (visible) {
       form.resetFields();
       setError('');
+      setModelNotFound(false);
+      setModelAutoFilled(false);
     }
   }, [visible, form]);
 
   const handleSubmit = async (values) => {
+    if (modelNotFound || !modelAutoFilled) {
+      setError('Model not found for the entered Part Number. Please enter a valid Part Number.');
+      return;
+    }
     setLoading(true);
     setError('');
-    
+
     try {
       const formData = new FormData();
-      
+
       // Add form fields to FormData
       Object.keys(values).forEach(key => {
         if (key === 'files' && values[key]) {
-          // Fix: Check if fileList exists and is an array
           const fileList = Array.isArray(values[key]) ? values[key] : values[key].fileList;
-          
           if (Array.isArray(fileList)) {
             fileList.forEach(file => {
               if (file.originFileObj) {
@@ -56,21 +51,20 @@ const MachineCreationModal = ({
               }
             });
           } else if (values[key].originFileObj) {
-            // Handle case where a single file object is provided
             formData.append('files', values[key].originFileObj);
           }
         } else if (values[key] !== undefined) {
           formData.append(key, values[key]);
         }
       });
-      
+
       // Call appropriate API based on type
       if (type === 'pump') {
         await createPump(formData);
       } else if (type === 'part') {
         await createPart(formData);
       }
-      
+
       message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
       onSuccess();
     } catch (err) {
@@ -90,17 +84,25 @@ const MachineCreationModal = ({
   // Handler for part_no blur/change to fetch model_no
   const handlePartNoBlur = async () => {
     const partNo = form.getFieldValue('part_no');
-    if (!partNo) return;
+    if (!partNo) {
+      setModelNotFound(false);
+      setModelAutoFilled(false);
+      form.setFieldsValue({ model_no: '' });
+      return;
+    }
     setModelLoading(true);
     setModelAutoFilled(false);
+    setModelNotFound(false);
     try {
       const resp = await getModelFromPart(partNo);
       if (resp && resp.model_no) {
         form.setFieldsValue({ model_no: resp.model_no });
         setModelAutoFilled(true);
+        setModelNotFound(false);
       } else {
+        form.setFieldsValue({ model_no: '' });
         setModelAutoFilled(false);
-        // Do not overwrite model_no, allow manual entry
+        setModelNotFound(true);
       }
     } finally {
       setModelLoading(false);
@@ -125,25 +127,23 @@ const MachineCreationModal = ({
           style={{ marginBottom: 16 }}
         />
       )}
-      
+
+      {modelNotFound && (
+        <Alert
+          message="Machine not found"
+          description="No model found for the entered Part Number. Please enter a valid Part Number."
+          type="error"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
       >
         <Row gutter={16}>
-          {type === 'pump' && (
-            <Col span={12}>
-              <Form.Item
-                name="serial_no"
-                label="Serial Number"
-                rules={[{ required: true, message: 'Please enter serial number' }]}
-              >
-                <Input prefix={<NumberOutlined />} placeholder="Serial Number" />
-              </Form.Item>
-            </Col>
-          )}
-          
           <Col span={12}>
             <Form.Item
               name="part_no"
@@ -159,25 +159,33 @@ const MachineCreationModal = ({
               />
             </Form.Item>
           </Col>
-          
+
           <Col span={type === 'pump' ? 12 : 24}>
             <Form.Item
               name="model_no"
               label="Model Number"
-              rules={[{ required: true, message: 'Please enter model number' }]}
+              rules={[
+                { required: true, message: 'Model number will be auto-filled' }
+              ]}
             >
               <Input
                 prefix={<TagOutlined />}
                 placeholder="Model Number"
-                disabled={modelLoading}
+                disabled
                 autoComplete="off"
-                // If autofilled, show a hint
-                suffix={modelLoading ? <span style={{ color: '#1890ff' }}>Loading...</span> : (modelAutoFilled ? <span style={{ color: '#52c41a' }}>Auto-filled</span> : null)}
+                value={form.getFieldValue('model_no')}
+                suffix={
+                  modelLoading
+                    ? <span style={{ color: '#1890ff' }}>Loading...</span>
+                    : (modelAutoFilled
+                      ? <span style={{ color: '#52c41a' }}>Auto-filled</span>
+                      : null)
+                }
               />
             </Form.Item>
           </Col>
         </Row>
-        
+
         <Form.Item
           name="files"
           label="Upload Files (Optional)"
@@ -186,18 +194,23 @@ const MachineCreationModal = ({
         >
           <Upload
             multiple
-            beforeUpload={() => false} // Prevent auto upload
+            beforeUpload={() => false}
             listType="text"
           >
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
           </Upload>
         </Form.Item>
-        
+
         <div style={{ textAlign: 'right', marginTop: 24 }}>
           <Button onClick={onCancel} style={{ marginRight: 8 }}>
             Cancel
           </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            disabled={modelNotFound || !modelAutoFilled}
+          >
             Create
           </Button>
         </div>

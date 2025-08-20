@@ -57,7 +57,7 @@ const DashboardLayout = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path.includes("/dashboard")) return "Dashboard";
-    if (path.includes("/pumps")) return "Pumps Management";
+    if (path.includes("/soldpumps")) return "Pumps Management";
     if (path.includes("/parts")) return "Parts Inventory";
     if (path.includes("/profile")) return "User Profile";
     if (path.includes("/settings")) return "System Settings";
@@ -145,10 +145,10 @@ const DashboardLayout = () => {
                 onClick: () => navigate("/dashboard"),
               },
               {
-                key: "/pumps",
+                key: "/soldpumps",
                 icon: <ToolOutlined />,
                 label: "Pumps",
-                onClick: () => navigate("/pumps"),
+                onClick: () => navigate("/soldpumps"),
               },
               {
                 key: "/parts",

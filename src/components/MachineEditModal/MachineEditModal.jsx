@@ -323,7 +323,7 @@ const MachineEditModal = ({ visible, machineId, onCancel, onSuccess }) => {
                   <Row gutter={16}>
                     <Col span={12}>
                       <Form.Item
-                        label="Customer Name"
+                        label="Contact Person"
                         name="customer_name"
                         rules={[
                           { min: 2, message: 'Customer name must be at least 2 characters' }

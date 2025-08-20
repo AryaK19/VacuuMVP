@@ -30,10 +30,16 @@ const MachineCreationModal = ({
   }, [visible, form]);
 
   const handleSubmit = async (values) => {
-    if (modelNotFound || !modelAutoFilled) {
-      setError('Model not found for the entered Part Number. Please enter a valid Part Number.');
+    if (!values.model_no) {
+      setError('Model number is required.');
       return;
     }
+    if (!values.part_no) {
+      setError('Part number is required.');
+      return;
+    }
+
+    
     setLoading(true);
     setError('');
 
@@ -81,34 +87,6 @@ const MachineCreationModal = ({
     return e?.fileList;
   };
 
-  // Handler for part_no blur/change to fetch model_no
-  const handlePartNoBlur = async () => {
-    const partNo = form.getFieldValue('part_no');
-    if (!partNo) {
-      setModelNotFound(false);
-      setModelAutoFilled(false);
-      form.setFieldsValue({ model_no: '' });
-      return;
-    }
-    setModelLoading(true);
-    setModelAutoFilled(false);
-    setModelNotFound(false);
-    try {
-      const resp = await getModelFromPart(partNo);
-      if (resp && resp.model_no) {
-        form.setFieldsValue({ model_no: resp.model_no });
-        setModelAutoFilled(true);
-        setModelNotFound(false);
-      } else {
-        form.setFieldsValue({ model_no: '' });
-        setModelAutoFilled(false);
-        setModelNotFound(true);
-      }
-    } finally {
-      setModelLoading(false);
-    }
-  };
-
   return (
     <ModalWrapper
       visible={visible}
@@ -122,16 +100,6 @@ const MachineCreationModal = ({
         <Alert
           message="Error"
           description={error}
-          type="error"
-          showIcon
-          style={{ marginBottom: 16 }}
-        />
-      )}
-
-      {modelNotFound && (
-        <Alert
-          message="Machine not found"
-          description="No model found for the entered Part Number. Please enter a valid Part Number."
           type="error"
           showIcon
           style={{ marginBottom: 16 }}
@@ -153,8 +121,6 @@ const MachineCreationModal = ({
               <Input
                 prefix={<NumberOutlined />}
                 placeholder="Part Number"
-                onBlur={handlePartNoBlur}
-                onPressEnter={handlePartNoBlur}
                 autoComplete="off"
               />
             </Form.Item>
@@ -165,22 +131,13 @@ const MachineCreationModal = ({
               name="model_no"
               label="Model Number"
               rules={[
-                { required: true, message: 'Model number will be auto-filled' }
+                { required: true, message: 'Please enter model number' }
               ]}
             >
               <Input
                 prefix={<TagOutlined />}
                 placeholder="Model Number"
-                disabled
                 autoComplete="off"
-                value={form.getFieldValue('model_no')}
-                suffix={
-                  modelLoading
-                    ? <span style={{ color: '#1890ff' }}>Loading...</span>
-                    : (modelAutoFilled
-                      ? <span style={{ color: '#52c41a' }}>Auto-filled</span>
-                      : null)
-                }
               />
             </Form.Item>
           </Col>
@@ -209,7 +166,6 @@ const MachineCreationModal = ({
             type="primary"
             htmlType="submit"
             loading={loading}
-            disabled={modelNotFound || !modelAutoFilled}
           >
             Create
           </Button>

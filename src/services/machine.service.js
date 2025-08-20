@@ -12,7 +12,7 @@ const prepareRequest = () => {
   }
 };
 
-export const getPumps = async (params = {}) => {
+export const getSoldPumps = async (params = {}) => {
   prepareRequest();
   try {
     const defaultParams = {
@@ -48,6 +48,25 @@ export const getParts = async (params = {}) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching parts:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
+export const getPumps = async (params = {}) => {
+  prepareRequest();
+  try {
+    const defaultParams = {
+      page: 1,
+      limit: 10,
+      sort_by: 'created_at',
+      sort_order: 'desc'
+    };
+    
+    const queryParams = { ...defaultParams, ...params };
+    
+    const response = await axios.get(`${API_URL}/machines/pumps`, { params: queryParams });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching pumps:', error);
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
@@ -145,7 +164,7 @@ export const getMachineServiceReports = async (machineId, params = {}) => {
 export const deleteSoldMachine = async (machineId) => {
   prepareRequest();
   try {
-    const response = await axios.delete(`${API_URL}/machines/${machineId}/delete`);
+    const response = await axios.delete(`${API_URL}/machines/sold_pumps/${machineId}/delete`);
     return response.data;
   } catch (error) {
     console.error('Error deleting machine:', error);

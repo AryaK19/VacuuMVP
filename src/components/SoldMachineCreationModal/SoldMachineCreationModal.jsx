@@ -273,11 +273,14 @@ const SoldMachineCreationModal = ({
                 autoComplete="off"
                 value={form.getFieldValue('model_no')}
                 suffix={
-                  modelLoading
-                    ? <span style={{ color: '#1890ff' }}>Loading...</span>
-                    : (modelAutoFilled
-                      ? <span style={{ color: '#52c41a' }}>Auto-filled</span>
-                      : null)
+                  <span style={{ color: 'black' }}>
+                    {modelLoading
+                      ? <span style={{ color: '#1890ff' }}>Loading...</span>
+                      : (modelAutoFilled
+                        ? <span style={{ color: '#52c41a' }}>Auto-filled</span>
+                        : null)
+                    }
+                  </span>
                 }
               />
             </Form.Item>
@@ -313,7 +316,7 @@ const SoldMachineCreationModal = ({
           </Col>
           <Col span={12}>
             <Form.Item
-              label="Customer Name"
+              label="Contact Person"
               name="customer_name"
               rules={[
                 { required: true, message: 'Please enter customer name' },

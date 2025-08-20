@@ -24,9 +24,10 @@ import {
   PlusOutlined,
   EditOutlined,
   ExclamationCircleOutlined,
+  FileAddOutlined,
 } from "@ant-design/icons";
-import { getPumps, deleteSoldMachine } from "../../services/machine.service";
-import MachineCreationModal from "../../components/MachineCreationModal/MachineCreationModal";
+import { getSoldPumps, deleteSoldMachine } from "../../services/machine.service";
+import ServiceReportForm from "../../components/ServiceReportForm/ServiceReportForm";
 import MachineDetailsModal from "../../components/MachineDetailsModal/MachineDetailsModal";
 import MachineEditModal from "../../components/MachineEditModal/MachineEditModal";
 import ModalWrapper from "../../components/ModalWrapper/ModalWrapper";
@@ -34,7 +35,7 @@ import "./SoldPumps.css";
 
 const { Title } = Typography;
 
-const PumpsContent = () => {
+const SoldPumpsContent = () => {
   const { modal } = App.useApp();
   const [pumps, setPumps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +47,7 @@ const PumpsContent = () => {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [showCreationModal, setShowCreationModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [selectedMachineId, setSelectedMachineId] = useState(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -70,7 +71,7 @@ const PumpsContent = () => {
         params.search = searchValue;
       }
 
-      const response = await getPumps(params);
+      const response = await getSoldPumps(params);
 
       setPumps(response.items || []);
       setPagination({
@@ -116,15 +117,6 @@ const PumpsContent = () => {
     setSortField("created_at");
     setSortOrder("desc");
     fetchPumps("");
-  };
-
-  const handleAddPump = () => {
-    setShowCreationModal(true);
-  };
-
-  const handleCreationSuccess = () => {
-    setShowCreationModal(false);
-    fetchPumps(); // Refresh the list
   };
 
   const handleViewMachine = (machineId) => {
@@ -187,11 +179,11 @@ const PumpsContent = () => {
         </span>
       ),
       key: "serial_no",
-      
+
       sorter: true,
       render: (record) => {
         return record.sold_info ? record.sold_info.serial_no : "";
-      } 
+      },
     },
     {
       title: () => (
@@ -216,13 +208,13 @@ const PumpsContent = () => {
     {
       title: () => (
         <span>
-          <UserOutlined className="header-icon" /> Customer Name
+          <UserOutlined className="header-icon" /> Customer
         </span>
       ),
       key: "customer",
       sorter: true,
       render: (record) => {
-        return record.sold_info ? record.sold_info.customer_name : "Not Assigned to Customer";
+        return record.sold_info ? record.sold_info.customer_company : "Not Assigned to Customer";
       },
     },
     {
@@ -290,10 +282,10 @@ const PumpsContent = () => {
 
             <Button
               type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddPump}
+              icon={<FileAddOutlined />}
+              onClick={() => setShowReportModal(true)}
             >
-              Add Pump
+              + Add Report
             </Button>
           </div>
         </div>
@@ -319,12 +311,13 @@ const PumpsContent = () => {
         </div>
       </Card>
 
-      <MachineCreationModal
-        visible={showCreationModal}
-        onCancel={() => setShowCreationModal(false)}
-        onSuccess={handleCreationSuccess}
-        type="pump"
-        title="Create New Pump"
+      <ServiceReportForm
+        visible={showReportModal}
+        onCancel={() => setShowReportModal(false)}
+        onSuccess={() => {
+          setShowReportModal(false);
+          fetchPumps();
+        }}
       />
 
       <MachineDetailsModal
@@ -344,10 +337,10 @@ const PumpsContent = () => {
 };
 
 // Wrap the component with App
-const Pumps = () => (
+const SoldPumps = () => (
   <App>
-    <PumpsContent />
+    <SoldPumpsContent />
   </App>
 );
 
-export default Pumps;
+export default SoldPumps;

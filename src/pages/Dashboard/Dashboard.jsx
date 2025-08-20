@@ -234,8 +234,8 @@ const Dashboard = () => {
           <Card>
             <Spin spinning={statsLoading}>
               <Statistic
-                title="Sold/Available Machines"
-                value={`${dashboardStats.sold_machines}/${dashboardStats.available_machines}`}
+                title="Installed Pumps"
+                value={`${dashboardStats.sold_machines}`}
                 prefix={<AppstoreOutlined />}
                 valueStyle={{ color: "#52c41a" }}
               />

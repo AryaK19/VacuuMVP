@@ -57,8 +57,9 @@ const DashboardLayout = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path.includes("/dashboard")) return "Dashboard";
-    if (path.includes("/soldpumps")) return "Pumps Management";
+    if (path.includes("/soldpumps")) return "Installed Pumps";
     if (path.includes("/parts")) return "Parts Inventory";
+    if (path.includes("/pumps")) return "Pumps Inventory";
     if (path.includes("/profile")) return "User Profile";
     if (path.includes("/settings")) return "System Settings";
     if (path.includes("/admins")) return "Admins Management";
@@ -147,15 +148,15 @@ const DashboardLayout = () => {
               {
                 key: "/soldpumps",
                 icon: <ToolOutlined />,
-                label: "Pumps",
+                label: "Installed Pumps",
                 onClick: () => navigate("/soldpumps"),
               },
-              {
-                key: "/parts",
-                icon: <AppstoreOutlined />,
-                label: "Parts",
-                onClick: () => navigate("/parts"),
-              },
+              // {
+              //   key: "/parts",
+              //   icon: <AppstoreOutlined />,
+              //   label: "Parts",
+              //   onClick: () => navigate("/parts"),
+              // },
               {
                 key: "/service-reports",
                 icon: <FileTextOutlined />,
@@ -200,6 +201,18 @@ const DashboardLayout = () => {
                     icon: <ShopOutlined />,
                     label: "Distributors",
                     onClick: () => navigate("/distributors"),
+                  },
+                  {
+                    key: "/pumps",
+                    icon: <ToolOutlined />,
+                    label: "Pumps",
+                    onClick: () => navigate("/pumps"),
+                  },
+                  {
+                    key: "/parts",
+                    icon: <AppstoreOutlined />,
+                    label: "Parts",
+                    onClick: () => navigate("/parts"),
                   },
                 ],
               },

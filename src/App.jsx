@@ -10,8 +10,9 @@ import DistributorLayout from './layouts/DistributorLayout';
 // Pages
 import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Pumps from './pages/SoldPumps/SoldPumps';
+import SoldPumps from './pages/SoldPumps/SoldPumps';
 import Parts from './pages/Parts/Parts';
+import Pumps from './pages/Pumps/Pumps';
 import Profile from './pages/Profile/Profile';
 import Settings from './pages/Settings/Settings';
 import Admins from './pages/Admins/Admins';
@@ -85,8 +86,9 @@ const AppContent = () => {
           </ProtectedRoute>
         }>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="soldpumps" element={<Pumps />} />
+          <Route path="soldpumps" element={<SoldPumps />} />
           <Route path="parts" element={<Parts />} />
+          <Route path="pumps" element={<Pumps />} />
           <Route path="service-reports" element={<ServiceReports />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />

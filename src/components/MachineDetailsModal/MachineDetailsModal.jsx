@@ -358,7 +358,7 @@ const MachineDetailsModal = ({
                       <div className="customer-info-item">
                         <UserOutlined className="customer-icon" />
                         <div>
-                          <div className="customer-label">Customer Name</div>
+                          <div className="customer-label">Contact Person</div>
                           <div className="customer-value">{machine.sold_info.customer_name}</div>
                         </div>
                       </div>

@@ -218,7 +218,7 @@ const ServiceReportDetailsModal = ({
                   </Descriptions.Item>
 
 
-                  <Descriptions.Item label="Customer Name">
+                  <Descriptions.Item label="Contact Person">
                     {reportData.customer_info.customer_name || 'Not specified'}
                   </Descriptions.Item>
 

@@ -174,7 +174,7 @@ const CustomerRegistrationForm = ({ visible, machine, onCancel, onSuccess }) => 
         requiredMark={false}
       >
         <Form.Item
-          label="Customer Name"
+          label="Contact Person"
           name="customer_name"
           rules={[
             { required: true, message: 'Please enter customer name' },
